@@ -1,5 +1,6 @@
 package com.chat.view.chat;
 
+import com.chat.view.contacts.ContactListView;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -56,7 +57,15 @@ public class ChatListView extends Application {
 
         // Set actions for each button (for now, they print the section clicked)
         chatsButton.setOnAction(e -> System.out.println("Chats clicked"));
-        contactsButton.setOnAction(e -> System.out.println("Contacts clicked"));
+        contactsButton.setOnAction(e -> {
+            System.out.println("Navigating to ContactListView...");
+            ContactListView contactListView = new ContactListView();
+            try {
+                contactListView.start(stage); // 使用当前 Stage 启动 ContactListView
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
         settingsButton.setOnAction(e -> System.out.println("Settings clicked"));
 
         bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);
