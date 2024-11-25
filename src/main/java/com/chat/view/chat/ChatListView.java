@@ -1,6 +1,7 @@
 package com.chat.view.chat;
 
 import com.chat.view.contacts.ContactListView;
+import com.chat.view.settings.ProfileSettingsView;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -66,7 +67,10 @@ public class ChatListView extends Application {
                 ex.printStackTrace();
             }
         });
-        settingsButton.setOnAction(e -> System.out.println("Settings clicked"));
+        settingsButton.setOnAction(e -> {
+            ProfileSettingsView profileSettingsView = new ProfileSettingsView(); // No need to pass user
+            profileSettingsView.start(stage); // Directly start the ProfileSettingsView
+        });
 
         bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);
         return bottomBar;

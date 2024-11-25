@@ -1,20 +1,35 @@
 package com.chat.controller;
 
+import com.chat.util.ApiClient;
+
 public class ContactController {
-}
 
+    private final ApiClient apiClient;
 
-/*
-private String status; // online or offline
+    public ContactController() {
+        this.apiClient = new ApiClient(); // Utility class for HTTP requests
+    }
 
-    this.status = "offline"; // initial status is offline
+    // Method to add a contact
+    public String addContact(String userId, String contactId) {
+        try {
+            // Send HTTP POST request to the backend API
+            String url = "/api/auth/" + userId;
+            String response = apiClient.sendPostRequest(url, contactId);
 
-// status update method
-public void updateStatus(String newStatus){//需要service里完成系统自动识别用户是否在线更改状态！
-    //update status, ensuring that it is either online or offline, no other status
-    if("online".equalsIgnoreCase(newStatus) || "offline".equalsIgnoreCase(newStatus)){
-        this. status = newStatus;
+            // Backend response determines the result
+            if (response.equals("Friend already exists.")) {
+                return "Friend already exists.";
+            } else if (response.equals("Invalid Friend ID.")) {
+                return "Invalid Friend ID.";
+            } else if (response.equals("Friend application accepted.")) {
+                return "success";
+            } else {
+                return "Server error.";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Server error.";
+        }
     }
 }
-
- */

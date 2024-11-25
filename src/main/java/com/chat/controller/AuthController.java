@@ -2,40 +2,50 @@ package com.chat.controller;
 
 import com.chat.model.User;
 
-import java.util.HashMap; // 用于存储注册用户的 HashMap
+import java.util.HashMap; // Used to store registered users
 import java.util.Map;
 
 public class AuthController {
-    private Map<String, User> registeredUsers; // 存储用户ID和用户对象的映射
+    private Map<String, User> registeredUsers; // A map to store user ID and user objects
 
-    // 构造方法
+    // Constructor
     public AuthController() {
         registeredUsers = new HashMap<>();
     }
 
     /**
-     * 注册新用户
+     * Register a new user
      *
-     * @param user 要注册的新用户
-     * @return 注册是否成功
+     * @param user The new user to register
+     * @return Whether the registration was successful
      */
     public boolean register(User user) {
-        if (registeredUsers.containsKey(user.getUserId())) { // 检查用户ID是否已存在
-            return false; // 用户ID已被注册
+        if (registeredUsers.containsKey(user.getUserId())) { // Check if the user ID already exists
+            return false; // User ID is already registered
         }
-        registeredUsers.put(user.getUserId(), user); // 将新用户加入注册用户列表
-        return true; // 注册成功
+        registeredUsers.put(user.getUserId(), user); // Add new user to the registered users map
+        return true; // Registration successful
     }
 
     /**
-     * 登录
+     * Sign in a user
      *
-     * @param userId   用户ID
-     * @param password 用户密码
-     * @return 登录是否成功
+     * @param userId   User ID
+     * @param password User password
+     * @return Whether the sign-in was successful
      */
     public boolean signIn(String userId, String password) {
-        User user = registeredUsers.get(userId); // 根据用户ID查找用户
-        return user != null && user.getPassword().equals(password); // 验证密码是否匹配
+        User user = registeredUsers.get(userId); // Get the user by ID
+        return user != null && user.getPassword().equals(password); // Validate the password
+    }
+
+    /**
+     * Get a user by their user ID
+     *
+     * @param userId The ID of the user to retrieve
+     * @return The User object associated with the provided user ID, or null if no user is found
+     */
+    public User getUserById(String userId) {
+        return registeredUsers.get(userId); // Return the user associated with the given user ID
     }
 }
