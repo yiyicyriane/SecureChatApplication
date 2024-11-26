@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class Main extends Application {
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws Exception {
         // 创建 AuthController 对象
         AuthController authController = new AuthController();
 
@@ -24,7 +24,7 @@ public class Main extends Application {
         // 这里仅做示范，实际操作会在 LoginView 中完成
         String loginUserId = "user1"; // 假设用户名
         String loginPassword = "password"; // 假设密码
-        boolean loginSuccess = authController.signIn(loginUserId, loginPassword);
+        boolean loginSuccess = authController.login(loginUserId, loginPassword);
 
         if (loginSuccess) {
             System.out.println("Login successful!");

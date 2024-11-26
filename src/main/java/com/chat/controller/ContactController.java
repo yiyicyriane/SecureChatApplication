@@ -1,29 +1,28 @@
 package com.chat.controller;
 
-import com.chat.util.ApiClient;
+import com.chat.service.AuthService;
 
 public class ContactController {
 
-    private final ApiClient apiClient;
+    private final AuthService authService;
 
-    public ContactController() {
-        this.apiClient = new ApiClient(); // Utility class for HTTP requests
+    public ContactController() throws Exception {
+        this.authService = new AuthService(); // Utility class for HTTP requests
     }
 
     // Method to add a contact
     public String addContact(String userId, String contactId) {
         try {
             // Send HTTP POST request to the backend API
-            String url = "/api/auth/" + userId;
-            String response = apiClient.sendPostRequest(url, contactId);
-
+            String response = authService.postNewFriendApplicationSenderIdSet(userId, contactId);
             // Backend response determines the result
-            if (response.equals("Friend already exists.")) {
-                return "Friend already exists.";
-            } else if (response.equals("Invalid Friend ID.")) {
-                return "Invalid Friend ID.";
+            if (response.equals("Friend already exists.") || 
+                response.equals("Invalid Friend ID.") || 
+                response.equals("Friend application sent.")) {
+                return response;
             } else if (response.equals("Friend application accepted.")) {
                 return "success";
+                // TODO: notice and update contact in view
             } else {
                 return "Server error.";
             }

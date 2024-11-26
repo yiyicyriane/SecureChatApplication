@@ -6,14 +6,16 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import com.chat.model.ChatRoom;
+import com.chat.util.FileLoadUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ChatRoomService {
-    private final String serverUrl = "http://54.193.233.72:8080/api/chatrooms";
+    private final String serverUrl;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    public ChatRoomService() {
+    public ChatRoomService() throws Exception {
+        this.serverUrl = FileLoadUtil.getServerUrl() + "/api/chatrooms";
         this.httpClient = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
     }

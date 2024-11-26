@@ -168,11 +168,11 @@ public class LoginView {
             String password = passwordField.getText();
 
             // Attempt to sign in the user through the AuthController
-            boolean signInSuccess = authController.signIn(userId, password);
+            boolean signInSuccess = authController.login(userId, password);
 
             if (signInSuccess) {
                 // If sign-in is successful, get the logged-in user
-                User loggedInUser = authController.getUserById(userId);  // Assume a method to get user by ID
+                User loggedInUser = authController.getRegisteredUser();  // Assume a method to get user by ID
 
                 // Store the logged-in user in CurrentUserContext
                 CurrentUserContext.getInstance().setCurrentUser(loggedInUser);

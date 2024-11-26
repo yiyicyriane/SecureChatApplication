@@ -4,6 +4,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -34,12 +36,12 @@ public class WebSocketService {
     private class MessageStompFrameHandler implements StompFrameHandler {
 
         @Override
-        public Type getPayloadType(StompHeaders stompHeaders) {
+        public @NonNull Type getPayloadType(@NonNull StompHeaders stompHeaders) {
             return String.class;
         }
     
         @Override
-        public void handleFrame(StompHeaders stompHeaders, Object payload) {
+        public void handleFrame(@NonNull StompHeaders stompHeaders, @Nullable Object payload) {
             // receivedFriendApplicationFuture.complete((String) payload);
             System.out.println("subscribe: " + messageTopic);
             // TODO: update chatroom messages
@@ -49,12 +51,12 @@ public class WebSocketService {
     private class FriendStompFrameHandler implements StompFrameHandler {
 
         @Override
-        public Type getPayloadType(StompHeaders stompHeaders) {
+        public @NonNull Type getPayloadType(@NonNull StompHeaders stompHeaders) {
             return String.class;
         }
     
         @Override
-        public void handleFrame(StompHeaders stompHeaders, Object payload) {
+        public void handleFrame(@NonNull StompHeaders stompHeaders, @Nullable Object payload) {
             // receivedFriendApplicationFuture.complete((String) payload);
             System.out.println("subscribe: " + friendTopic);
             // TODO: show friend application notice
@@ -63,24 +65,24 @@ public class WebSocketService {
 
     private class MessageStompSessionHandler extends StompSessionHandlerAdapter{
         @Override
-        public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+        public void afterConnected(@NonNull StompSession session, @NonNull StompHeaders connectedHeaders) {
             session.subscribe(messageTopic, new MessageStompFrameHandler());
         }
 
         @Override
-        public void handleException(StompSession session, StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
+        public void handleException(@NonNull StompSession session, @Nullable StompCommand command, @NonNull StompHeaders headers, @NonNull byte[] payload, @NonNull Throwable exception) {
             throw new RuntimeException("Failure in WebSocket Stomp Session Handling", exception);
         }
     }
 
     private class FriendStompSessionHandler extends StompSessionHandlerAdapter{
         @Override
-        public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+        public void afterConnected(@NonNull StompSession session, @NonNull StompHeaders connectedHeaders) {
             session.subscribe(friendTopic, new FriendStompFrameHandler());
         }
 
         @Override
-        public void handleException(StompSession session, StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
+        public void handleException(@NonNull StompSession session, @Nullable StompCommand command, @NonNull StompHeaders headers, @NonNull byte[] payload, @NonNull Throwable exception) {
             throw new RuntimeException("Failure in WebSocket Stomp Session Handling", exception);
         }
     }

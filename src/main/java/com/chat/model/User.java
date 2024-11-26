@@ -8,14 +8,13 @@ package com.chat.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 
 @Data
-@RequiredArgsConstructor               // a constructor with required args (final or @NonNull)
 @AllArgsConstructor              // a constructor with all args
 public class User {
-    private final String userId; //user creates their userid when sign up, unique and cannot change after being created
-    private String name;
-    private String password;
-    private String profilePicture;
+    @NonNull private final String userId; //user creates their userid when sign up, unique and cannot change after being created
+    @NonNull private String name;
+    @NonNull private String password;
+    @NonNull private String profilePicture;
 }

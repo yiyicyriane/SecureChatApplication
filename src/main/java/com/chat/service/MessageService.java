@@ -7,15 +7,17 @@ import java.net.http.HttpResponse;
 import java.util.List;
 
 import com.chat.model.Message;
+import com.chat.util.FileLoadUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MessageService {
-    private final String serverUrl = "http://54.193.233.72:8080/api/messages";
+    private final String serverUrl;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    public MessageService() {
+    public MessageService() throws Exception {
+        this.serverUrl = FileLoadUtil.getServerUrl() + "/api/messages";
         this.httpClient = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
     }
