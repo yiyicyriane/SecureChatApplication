@@ -173,7 +173,7 @@ public class ContactListView extends Application {
     private HBox createBottomBar(Stage stage) {
         HBox bottomBar = new HBox();
         bottomBar.setAlignment(Pos.CENTER);
-        bottomBar.setStyle("-fx-background-color: #333; -fx-padding: 10;");
+        bottomBar.setStyle("-fx-background-color: #55AD9B; -fx-padding: 10;");
         bottomBar.setPrefHeight(50);
         bottomBar.setSpacing(30);
 

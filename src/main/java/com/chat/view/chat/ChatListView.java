@@ -50,7 +50,7 @@ public class ChatListView extends Application {
     private HBox createBottomBar(Stage stage) {
         HBox bottomBar = new HBox(30); // 30 pixels spacing
         bottomBar.setAlignment(Pos.CENTER);
-        bottomBar.setStyle("-fx-background-color: #333; -fx-padding: 10;");
+        bottomBar.setStyle("-fx-background-color: #55AD9B; -fx-padding: 10;");
 
         Button chatsButton = new Button("Chats");
         Button contactsButton = new Button("Contacts");
