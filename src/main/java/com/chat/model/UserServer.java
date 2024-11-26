@@ -38,4 +38,14 @@ public class UserServer {
     public Set<String> getFriendApplicationSenderIdSet() {
         return new HashSet<>(friendApplicationSenderIdSet);
     }
+
+    public void setFriendIdSet(Set<String> friendIdSet) {
+        this.friendIdSet = new HashSet<>(friendIdSet);
+    }
+    public void setChatRoomIdSet(Set<String> chatRoomIdSet) {
+        this.chatRoomIdSet = new HashSet<>(chatRoomIdSet);
+    }
+    public void setFriendApplicationSenderIdSet(Set<String> friendApplicationSenderIdSet) {
+        this.friendApplicationSenderIdSet = new HashSet<>(friendApplicationSenderIdSet);
+    }
 }
