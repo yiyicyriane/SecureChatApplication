@@ -5,44 +5,14 @@ status由系统自动检测联系人的在线状态（online or offline)自动�
  */
 package com.chat.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor              // a constructor with all args
 public class Contact{
     //field
     private final String userId; // use final as in contact, user can only check others' information
     private final String name;
     private final String profilePicture;
-    private final String phoneNumber;
-    private String status; // 服务层需要实现动态更新状态，online or offline
-
-
-    //constructor
-    public Contact(String userId, String name, String profilePicture, String phoneNumber, String status){
-        this.userId = userId;
-        this.name = name;
-        this.profilePicture = profilePicture;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
-    }
-
-    //Getter
-    public String getUserId(){
-        return userId;
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public String getProfilePicture(){
-        return profilePicture;
-    }
-
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getStatus(){
-        return status;
-    }
-
 }

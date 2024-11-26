@@ -1,6 +1,6 @@
 package com.chat.view.contacts;
 
-import com.chat.model.Group;
+import com.chat.model.ChatRoom;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -61,7 +61,7 @@ public class NewGroupView extends Application {
 
             // 模拟群组创建
             String adminUserId = "admin123"; // 当前用户的userId，可替换为实际登录用户
-            Group newGroup = new Group(groupId, groupName, adminUserId, List.of(adminUserId));
+            ChatRoom newGroup = new ChatRoom(groupId, true, List.of(adminUserId), groupName);
             existingGroupIds.add(groupId);
 
             // 调用回调函数传递新群组ID
