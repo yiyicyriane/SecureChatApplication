@@ -1,4 +1,6 @@
+/*
 package com.chat.view.chat;
+
 
 import com.chat.view.contacts.ContactListView;
 import com.chat.view.settings.ProfileSettingsView;
@@ -131,6 +133,114 @@ public class ChatListView extends Application {
             System.out.println("Drag detected, consider showing delete button");
         });
 
+        return chatItem;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+*/
+package com.chat.view.chat;
+
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import com.chat.controller.ChatController;
+
+public class ChatListView extends Application {
+
+    private VBox root;
+    private VBox chatList;
+    private HBox bottomBar;
+    private ChatController controller;
+
+    @Override
+    public void start(Stage stage) {
+        // Initialize controller
+        controller = new ChatController(this, stage);
+
+        // Initialize the root and layout
+        root = new VBox(10);
+        root.setStyle("-fx-padding: 20; -fx-background-color: #f0f0f0;");
+
+        // Initialize the chat list
+        chatList = new VBox(10);
+        root.getChildren().add(chatList);
+
+        // Add a spacer to push the bottom bar to the bottom of the window
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+        root.getChildren().add(spacer);
+
+        // Initialize and add the bottom navigation bar (Chats, Contacts, Settings)
+        bottomBar = createBottomBar(stage);
+        root.getChildren().add(bottomBar);
+
+        // Load chat list
+        controller.loadChatList();
+
+        // Set up the scene and stage
+        Scene scene = new Scene(root, 400, 600);
+        stage.setTitle("Chat List");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    // add a chat item to the list
+    public void addChatItem(HBox chatItem) {
+        chatList.getChildren().add(chatItem);
+    }
+
+    // helper：create the bottom navigation bar (Chats, Contacts, Settings)
+    private HBox createBottomBar(Stage stage) {
+        HBox bottomBar = new HBox(30);
+        bottomBar.setAlignment(Pos.CENTER);
+        bottomBar.setStyle("-fx-background-color: #55AD9B; -fx-padding: 10;");
+
+        Button chatsButton = new Button("Chats");
+        Button contactsButton = new Button("Contacts");
+        Button settingsButton = new Button("Settings");
+
+        // Attach controller methods to button actions
+        chatsButton.setOnAction(e -> controller.onChatsClicked());
+        contactsButton.setOnAction(e -> controller.onContactsClicked());
+        settingsButton.setOnAction(e -> controller.onSettingsClicked());
+
+        bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);
+        return bottomBar;
+    }
+
+    // create a chat item (conversation) layout
+    public HBox createChatItem(String chatRoomId, String name, String lastMessage, String lastMessageTime, String avatar) {
+        HBox chatItem = new HBox(10);
+        chatItem.setStyle("-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-radius: 5; -fx-background-radius: 5; -fx-border-color: #dcdcdc;");
+
+        Label avatarLabel = new Label(avatar);
+        avatarLabel.setStyle("-fx-background-color: #55AD9B; -fx-text-fill: white; -fx-font-size: 20px; -fx-alignment: center; -fx-pref-width: 40px; -fx-pref-height: 40px; -fx-border-radius: 20px;");
+
+        Label nameLabel = new Label(name);
+        nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
+        Label lastMessageLabel = new Label(lastMessage);
+        lastMessageLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888888;");
+
+        Label timeLabel = new Label(lastMessageTime);
+        timeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #888888;");
+
+        chatItem.setOnMouseClicked(e -> controller.onChatItemClicked(chatRoomId));
+
+        VBox chatInfo = new VBox(5);
+        chatInfo.getChildren().addAll(nameLabel, lastMessageLabel);
+        HBox.setHgrow(chatInfo, javafx.scene.layout.Priority.ALWAYS);
+
+        chatItem.getChildren().addAll(avatarLabel, chatInfo, timeLabel);
         return chatItem;
     }
 

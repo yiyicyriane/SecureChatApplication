@@ -11,6 +11,14 @@ import lombok.Data;
 import java.security.KeyPair;
 import java.security.PublicKey;
 
+//yiyi add
+import com.chat.view.chat.ChatListView;
+import com.chat.util.CurrentUserContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert;
+import javafx.stage.Stage;
+
 @Data
 @AllArgsConstructor 
 public class AuthController {
@@ -22,6 +30,60 @@ public class AuthController {
     // Constructor
     public AuthController() throws Exception {
         authService = new AuthService();
+    }
+
+    //handle user log in
+    public void handleSignIn(String userId, String password, Button signInButton) {
+        boolean signInSuccess = login(userId, password);
+
+        if (signInSuccess) {
+            // If sign-in is successful, get the logged-in user
+            User loggedInUser = registeredUser;  // get user by ID
+
+            // Store the logged-in user in CurrentUserContext
+            CurrentUserContext.getInstance().setCurrentUser(loggedInUser);
+
+            // Close the current login window and open the chat list window
+            Stage currentStage = (Stage) signInButton.getScene().getWindow();
+            currentStage.close();
+
+            ChatListView chatListView = new ChatListView();
+            Stage chatListStage = new Stage();
+            try {
+                chatListView.start(chatListStage);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            // Show an error message if login fails
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Sign In Failed");
+            alert.setHeaderText(null);
+            alert.setContentText("Invalid User ID or Password.");
+            alert.showAndWait();
+        }
+    }
+
+    //handle user registration
+    public void registerUser(String userId, String name, String password, String profilePicture) {
+        User newUser = new User(userId, name, password, profilePicture);
+        boolean registrationSuccess = register(newUser);
+
+        if (registrationSuccess) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Registration Successful");
+            alert.setHeaderText("You have successfully registered!");
+            ButtonType okButton = new ButtonType("OK");
+            alert.getButtonTypes().setAll(okButton);
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Registration Failed");
+            alert.setHeaderText("User ID already exists!");
+            ButtonType okButtonFail = new ButtonType("OK");
+            alert.getButtonTypes().setAll(okButtonFail);
+            alert.showAndWait();
+        }
     }
 
     /**

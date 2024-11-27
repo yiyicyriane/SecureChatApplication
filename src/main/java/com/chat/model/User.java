@@ -17,4 +17,6 @@ public class User {
     @NonNull private String name;
     @NonNull private String password;
     @NonNull private String profilePicture;
+
+
 }
