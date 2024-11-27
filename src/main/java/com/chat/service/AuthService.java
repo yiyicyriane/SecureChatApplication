@@ -103,7 +103,7 @@ public class AuthService {
     }
 
     public String putPassword(String userId, String password, String newPassword, String publicKey) throws Exception {
-        String endpoint = serverUrl + "/password/" + userId + "?password=" + password + "&?newPassword=" + newPassword;
+        String endpoint = serverUrl + "/password/" + userId + "?password=" + password + "&newPassword=" + newPassword;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
                 .PUT(HttpRequest.BodyPublishers.ofString(publicKey))
@@ -124,18 +124,6 @@ public class AuthService {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return response.body(); 
         // String of publicKey
-    }
-
-    public String putPublicKey(String userId, String publicKey) throws Exception {
-        String endpoint = serverUrl + "/publickey/" + userId;
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpoint))
-                .PUT(HttpRequest.BodyPublishers.ofString(publicKey))
-                .header("Content-Type", "application/json")
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body(); 
-        // "Public key updated."
     }
 
     public Set<String> getChatRoomIdSet(String userId) throws Exception {
