@@ -12,9 +12,18 @@
 
 package com.chat.controller;
 
+import java.util.List;
+import java.util.Set;
+
 import com.chat.model.ChatItem;
 import com.chat.model.ChatItemList;
+import com.chat.model.ChatRoom;
 import com.chat.model.ChatWindow;
+import com.chat.model.Message;
+import com.chat.service.AuthService;
+import com.chat.service.ChatRoomService;
+import com.chat.service.MessageService;
+import com.chat.util.TimestampFormatter;
 import com.chat.view.chat.ChatWindowView;
 import com.chat.view.contacts.ContactListView;
 import com.chat.view.settings.ProfileSettingsView;
@@ -23,10 +32,32 @@ import javafx.stage.Stage;
 public class ChatController {
 
     private ChatItemList chatItemList; // 存储聊天项列表
+    private final ChatRoomService chatRoomService;
+    private final AuthService authService;
+    private final MessageService messageService;
 
-    public ChatController() {
+    public ChatController() throws Exception {
         // 初始化聊天项列表
         this.chatItemList = new ChatItemList();
+        this.chatRoomService = new ChatRoomService();
+        this.authService = new AuthService();
+        this.messageService = new MessageService();
+    }
+
+    public String getChatRoomName(ChatRoom chatRoom, String userId) throws Exception {
+        String chatRoomName = chatRoom.getChatRoomName();
+        if (!chatRoom.isGroupChatRoom()) {
+            chatRoom.getMemberIdList().remove(userId);
+            String friendId = chatRoom.getMemberIdList().getFirst();
+            chatRoomName = authService.getContact(friendId).getUsername();
+        }
+        return chatRoomName;
+    }
+
+    public Message getLastMessage(String chatRoomId) throws Exception {
+        List<Message> messages = messageService.getMessages(chatRoomId);
+        if (messages.isEmpty()) return new Message();
+        return messages.getLast();
     }
 
     /**
@@ -34,7 +65,18 @@ public class ChatController {
      *
      * @return 返回当前的聊天窗口列表
      */
-    public ChatItemList getChatItemList() {
+    public ChatItemList getChatItemList(String userId) throws Exception {
+        Set<String> chatRoomIdSet = authService.getChatRoomIdSet(userId);
+        if (chatRoomIdSet.isEmpty()) return new ChatItemList();
+        for (String chatRoomId: chatRoomIdSet) {
+            ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
+            Message lastMessage = getLastMessage(chatRoomId);
+            ChatItem chatItem = new ChatItem(chatRoom.getChatRoomId(), 
+                this.getChatRoomName(chatRoom, userId), 
+                lastMessage.getContent(), 
+                TimestampFormatter.timestampToString(lastMessage.getTimestamp()));
+            chatItemList.addChatItem(chatItem);
+        }
         return chatItemList;
     }
 

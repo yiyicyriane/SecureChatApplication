@@ -24,7 +24,7 @@ public class ControllerManager {
     }
 
     // 获取 ChatController 的实例
-    public ChatController getChatController() {
+    public ChatController getChatController() throws Exception {
         if (chatController == null) {
             chatController = new ChatController();
         }

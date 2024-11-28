@@ -185,7 +185,15 @@ public class ContactListView extends Application {
         HBox.setHgrow(contactsButton, Priority.ALWAYS);
         HBox.setHgrow(settingsButton, Priority.ALWAYS);
 
-        chatsButton.setOnAction(e -> openView(new ChatListView(), stage));
+        
+        chatsButton.setOnAction(e -> {
+            try {
+                openView(new ChatListView(), stage);
+            } catch (Exception e1) {
+                System.err.println("ChatListView open error");
+                e1.printStackTrace();
+            }
+        });
         contactsButton.setOnAction(e -> openView(new ContactListView(), stage));
         settingsButton.setOnAction(e -> {
             System.out.println("Settings button clicked");

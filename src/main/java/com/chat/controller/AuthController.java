@@ -35,7 +35,7 @@ public class AuthController {
     }
 
     //handle user log in
-    public void handleSignIn(String userId, String password, Button signInButton) {
+    public void handleSignIn(String userId, String password, Button signInButton) throws Exception {
         boolean signInSuccess = login(userId, password);
 
         if (signInSuccess) {

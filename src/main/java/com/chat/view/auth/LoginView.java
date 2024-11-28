@@ -171,7 +171,12 @@ public class LoginView {
         signInButton.setStyle("-fx-background-color: #55AD9B; -fx-text-fill: white;");
         signInButton.setOnAction(e -> {
             // Pass user input to the AuthController
-            authController.handleSignIn(getUserId(), getPassword(), signInButton);
+            try {
+                authController.handleSignIn(getUserId(), getPassword(), signInButton);
+            } catch (Exception e1) {
+                System.err.println("Authentication controller sign in error");
+                e1.printStackTrace();
+            }
         });
         grid.add(signInButton, 0, 2);
 
