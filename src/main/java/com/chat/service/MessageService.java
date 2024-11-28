@@ -46,7 +46,7 @@ public class MessageService {
     }
 
     public String deleteMessage(String chatRoomId, long timestamp) throws Exception {
-        String endpoint = serverUrl + "/" + chatRoomId + "?timestamp" + timestamp;
+        String endpoint = serverUrl + "/" + chatRoomId + "?timestamp=" + timestamp;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
                 .DELETE()
