@@ -65,10 +65,16 @@ public class ChatWindowView extends Application {
         header.setStyle("-fx-background-color: #55AD9B; -fx-padding: 10;");
         header.setAlignment(Pos.CENTER_LEFT);
 
-        Image chatRoomImage = new Image(chatWindow.getProfilePicture());
-        ImageView chatRoomImageView = new ImageView(chatRoomImage);
-        chatRoomImageView.setFitWidth(40);
-        chatRoomImageView.setFitHeight(40);
+        ImageView chatRoomImageView;
+        if (chatWindow.getProfilePicture().isEmpty()) {
+            chatRoomImageView = new ImageView();
+        }
+        else {
+            Image chatRoomImage = new Image(chatWindow.getProfilePicture());
+            chatRoomImageView = new ImageView(chatRoomImage);
+            chatRoomImageView.setFitWidth(40);
+            chatRoomImageView.setFitHeight(40);
+        }
 
         Text chatRoomNameText = new Text(chatWindow.getChatRoomName());
         chatRoomNameText.setFont(Font.font("Arial", 18));
