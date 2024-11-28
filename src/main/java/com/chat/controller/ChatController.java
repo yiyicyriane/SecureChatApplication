@@ -25,13 +25,6 @@ import com.chat.service.AuthService;
 import com.chat.service.ChatRoomService;
 import com.chat.service.MessageService;
 import com.chat.util.TimestampFormatter;
-import com.chat.view.chat.ChatWindowView;
-import com.chat.view.contacts.ContactListView;
-import com.chat.view.settings.ProfileSettingsView;
-import javafx.stage.Stage;
-
-
-
 
 public class ChatController {
 
@@ -72,36 +65,38 @@ public class ChatController {
         ChatItemList chatItemList = new ChatItemList(); // 存储聊天项列表
         Set<String> chatRoomIdSet = authService.getChatRoomIdSet(userId);
         if (chatRoomIdSet.isEmpty()) return new ChatItemList();
-        for (String chatRoomId: chatRoomIdSet) {
+        for (String chatRoomId : chatRoomIdSet) {
             ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
             Message lastMessage = getLastMessage(chatRoomId);
-            ChatItem chatItem = new ChatItem(chatRoom.getChatRoomId(), 
-                this.getChatRoomName(chatRoom, userId), 
-                lastMessage.getContent(), 
-                TimestampFormatter.timestampToString(lastMessage.getTimestamp()));
+            ChatItem chatItem = new ChatItem(chatRoom.getChatRoomId(),
+                    this.getChatRoomName(chatRoom, userId),
+                    lastMessage.getContent(),
+                    TimestampFormatter.timestampToString(lastMessage.getTimestamp()));
             chatItemList.addChatItem(chatItem);
         }
         return chatItemList;
-
-    public ChatItemList getChatItemList() {
-        return null;
-
     }
 
 
     //我需要的是model里的ChatWindow里的数据，因为是从聊天列表里点击才会进入和某一个人的聊天对话框，所以会传入这个chatroom的Id.
-    public ChatWindow getChatWindowById(String chatRoomId) {
+    public ChatWindow getChatWindowById (String chatRoomId){
+
     }
 
     //用于在view里判断sender是不是当前的用户，以及获取当前发送的信息的senderid
-    public String currentUserId() {
+    public String currentUserId () {
+
     }
 
     //把我在聊天输入框里输入的内容加到后端。
-    public void addMessageToChatRoom(String chatRoomId, String senderId, String newMessage, long timestamp) {
+    public void addMessageToChatRoom (String chatRoomId, String senderId, String newMessage,long timestamp){
     }
 
     //把我在聊天记录里想删掉的自己的那条聊天记录从后端删除。
-    public void removeMessageFromChatRoom(String chatRoomId, int index) {
+    public void removeMessageFromChatRoom (String chatRoomId,int index){
     }
+
 }
+
+
+
