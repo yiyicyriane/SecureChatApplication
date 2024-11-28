@@ -313,9 +313,15 @@ public class ContactListView extends Application {
         // Navigate to settings view
         settingsButton.setOnAction(e -> {
             System.out.println("Navigate to Settings view");
-            ProfileSettingsView settingsView = new ProfileSettingsView();
+            ProfileSettingsView settingsView = null;
+            try {
+                settingsView = new ProfileSettingsView();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             settingsView.start(stage);
         });
+
 
         return bottomBar;
     }

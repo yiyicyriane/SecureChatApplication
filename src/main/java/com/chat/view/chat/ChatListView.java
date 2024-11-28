@@ -141,7 +141,13 @@ public class ChatListView extends Application {
             contactListView.start(stage);
         }); // 打开联系人视图
 
-        settingsButton.setOnAction(e -> new ProfileSettingsView().start(stage)); // 打开设置视图
+        settingsButton.setOnAction(e -> {
+            try {
+                new ProfileSettingsView().start(stage);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }); // 打开设置视图
 
         bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);
         return bottomBar;

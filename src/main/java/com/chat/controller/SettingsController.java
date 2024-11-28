@@ -1,9 +1,10 @@
 package com.chat.controller;
 
 import com.chat.model.User;
+import com.chat.util.CurrentUserContext;
 
 public class SettingsController {
-
+/*暂时不展示notification设置的功能。
     private boolean notificationsEnabled = true; // 默认开启通知
 
     public boolean isNotificationsEnabled() {
@@ -14,9 +15,13 @@ public class SettingsController {
         this.notificationsEnabled = enabled;
         // 保存到数据库或配置文件（根据需求实现）
     }
+ */
 
-    public void updateUserProfilePicture(User user) {
-        // 更新用户头像信息到数据库或后端（根据需求实现）
-        System.out.println("Updated profile picture for user: " + user.getUserId());
+    public User getCurrentUser() {
+        return CurrentUserContext.getInstance().getCurrentUser();
+    }
+
+    //TODO method to update profile picture, 返回true说明后端更新成功。
+    public boolean updateProfilePicture(String string) {
     }
 }
