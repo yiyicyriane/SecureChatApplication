@@ -19,6 +19,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
+import com.chat.util.ControllerManager;
+
 @Data
 @AllArgsConstructor 
 public class AuthController {
@@ -47,6 +49,8 @@ public class AuthController {
             Stage currentStage = (Stage) signInButton.getScene().getWindow();
             currentStage.close();
 
+
+            //navigate to chatlistview page
             ChatListView chatListView = new ChatListView();
             Stage chatListStage = new Stage();
             try {

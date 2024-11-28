@@ -212,7 +212,5 @@ public class ContactListView extends Application {
         start(stage); // Reload the interface
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+
 }

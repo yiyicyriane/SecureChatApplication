@@ -176,7 +176,5 @@ public class ProfileSettingsView extends Application {
         alert.showAndWait();
     }
 
-    public static void main(String[] args) {
-        launch(args); // Launch the JavaFX application
-    }
+
 }
