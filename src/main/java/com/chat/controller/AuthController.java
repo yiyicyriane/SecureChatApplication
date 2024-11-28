@@ -8,9 +8,6 @@ import com.chat.util.HashUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.security.KeyPair;
-import java.security.PublicKey;
-
 //yiyi add
 import com.chat.view.chat.ChatListView;
 import com.chat.util.CurrentUserContext;

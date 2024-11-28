@@ -3,8 +3,9 @@ package com.chat.view.chat;
 import com.chat.controller.ChatController;
 import com.chat.model.ChatItem;
 import com.chat.model.ChatItemList;
+import com.chat.service.WebSocketService;
 import com.chat.util.ControllerManager;
-import com.chat.util.CurrentUserContext;
+import com.chat.util.CurrentChatWindowViewContext;
 import com.chat.util.CurrentViewContext;
 import com.chat.view.contacts.ContactListView;
 import com.chat.view.settings.ProfileSettingsView;
@@ -59,6 +60,9 @@ public class ChatListView extends Application {
         stage.show();
 
         CurrentViewContext.getInstance().setCurrentView(this);
+        
+        WebSocketService.getInstance().subscribeFriendApplication();
+        WebSocketService.getInstance().subscribeChatRoomUpdate();
     }
 
     public void updateChatListView() throws Exception {
@@ -109,7 +113,7 @@ public class ChatListView extends Application {
         chatItemBox.setOnMouseClicked((MouseEvent event) -> {
            // chatController.openChatWindow(chatItem.getChatRoomId()); // 调用控制器打开聊天窗口
             try {
-                new ChatWindowView(chatItem.getChatRoomId()).start(new Stage());
+                CurrentChatWindowViewContext.getInstance().setChatWindowView(new ChatWindowView(chatItem.getChatRoomId()));
             } catch (Exception e) {
                 System.err.println("New ChatWindowView error");
                 e.printStackTrace();

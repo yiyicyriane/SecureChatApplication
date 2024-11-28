@@ -2,7 +2,7 @@ package com.chat.util;
 
 public class CurrentViewContext {
     private static CurrentViewContext instance;
-    private Object currentView;
+    private Object lastView, currentView;
 
     private CurrentViewContext() {}
 
@@ -18,6 +18,11 @@ public class CurrentViewContext {
     }
 
     public void setCurrentView(Object currentView) {
+        if (this.currentView != null) lastView = currentView;
         this.currentView = currentView;
+    }
+
+    public void closeCurrentView() {
+        currentView = lastView;
     }
 }

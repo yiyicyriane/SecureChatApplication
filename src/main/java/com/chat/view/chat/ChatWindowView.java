@@ -2,6 +2,7 @@ package com.chat.view.chat;
 
 import com.chat.model.ChatWindow;
 import com.chat.model.Message;
+import com.chat.service.WebSocketService;
 import com.chat.controller.ChatController;
 import com.chat.util.ControllerManager;
 import com.chat.util.CurrentViewContext;
@@ -38,6 +39,10 @@ public class ChatWindowView extends Application {
         this.messageList = chatWindow.getMessageList(); // Get message list from ChatWindow
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.chatWindow = chatController.getChatWindowById(chatRoomId); // Get updated chat window data
@@ -53,7 +58,11 @@ public class ChatWindowView extends Application {
         primaryStage.setTitle("Chat with " + chatWindow.getChatRoomName());
         primaryStage.show();
 
+        primaryStage.setOnCloseRequest(event -> CurrentViewContext.getInstance().closeCurrentView());
+
         CurrentViewContext.getInstance().setCurrentView(this);
+
+        WebSocketService.getInstance().subscribeCurrentChatRoomMessage(chatRoomId);
     }
 
     private VBox createChatLayout() {

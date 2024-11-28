@@ -1,7 +1,6 @@
 package com.chat.service;
 
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -16,10 +15,8 @@ import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
-import org.springframework.web.socket.sockjs.client.SockJsClient;
-import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import com.chat.model.Contact;
+import com.chat.util.CurrentChatWindowViewContext;
 import com.chat.util.CurrentUserContext;
 import com.chat.util.CurrentViewContext;
 import com.chat.view.auth.LoginView;
@@ -29,10 +26,11 @@ import com.chat.view.contacts.ContactListView;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
 
 public class WebSocketService {
-    private final String serverUrl = "ws://54.193.233.72:8080/chat";
+    private static WebSocketService instance;
+
+    private final String serverUrl = "ws://54.153.42.91:8080/chat";
     private final WebSocketStompClient stompClient;
     private final String friendTopic;
     private final String chatRoomTopic;
@@ -40,18 +38,26 @@ public class WebSocketService {
     private String messageTopic;
     private StompSession messageSession, friendSession, chatroomSession;
 
-    public WebSocketService(String currentChatRoomId, String userId) throws Exception {
-        stompClient = new WebSocketStompClient(new SockJsClient(
-            List.of(new WebSocketTransport(new StandardWebSocketClient()))));
+    // private WebSocketService() {}
+
+    public static synchronized WebSocketService getInstance() throws Exception {
+        if (instance == null) {
+            instance = new WebSocketService();
+        }
+        return instance;
+    }
+
+    private WebSocketService() throws Exception {
+        stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new StringMessageConverter());
-        messageTopic = "/topic/messages/" + currentChatRoomId;
+        String userId = CurrentUserContext.getInstance().getCurrentUser().getUserId();
+        // messageTopic = "/topic/messages/currentChatRoomId";
         friendTopic = "/topic/friend/" + userId;
         chatRoomTopic = "/topic/chatroom/" + userId;
         authService = new AuthService();
     }
 
     private class MessageStompFrameHandler implements StompFrameHandler {
-
         @Override
         public @NonNull Type getPayloadType(@NonNull StompHeaders stompHeaders) {
             return String.class;
@@ -62,18 +68,19 @@ public class WebSocketService {
             System.out.println("subscribe: " + messageTopic);
             // update chatroom messages
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
-            if (currentView instanceof ChatListView) {
+            // if (currentView instanceof ChatListView) {
+            //     try {
+            //         ChatListView chatListView = (ChatListView) currentView;
+            //         chatListView.updateChatListView();
+            //     } catch (Exception e) {
+            //         System.err.println("Refresh chat list view error");
+            //         e.printStackTrace();
+            //     }
+            // }
+            // else 
+            if (currentView != null && currentView instanceof ChatWindowView) {
                 try {
-                    ChatListView chatListView = (ChatListView) currentView;
-                    chatListView.updateChatListView();
-                } catch (Exception e) {
-                    System.err.println("Refresh chat list view error");
-                    e.printStackTrace();
-                }
-            }
-            else if (currentView instanceof ChatWindowView) {
-                try {
-                    ChatWindowView chatWindowView = (ChatWindowView) currentView;
+                    ChatWindowView chatWindowView = CurrentChatWindowViewContext.getInstance().getChatWindowView();
                     chatWindowView.updateChatWindow();
                 } catch (Exception e) {
                     System.err.println("Refresh chat window view error");
@@ -97,7 +104,7 @@ public class WebSocketService {
             // TODO: show friend application notice, update contactview
             String friendId = (String) payload;
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
-            if (!(currentView instanceof LoginView || currentView == null)) {
+            if (!(currentView == null || currentView instanceof LoginView)) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("New Friend Application");
                 alert.setHeaderText(null);
@@ -132,7 +139,7 @@ public class WebSocketService {
             System.out.println("subscribe: " + chatRoomTopic);
             // TODO: update chatlistview
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
-            if (currentView instanceof ChatListView) {
+            if (currentView != null && currentView instanceof ChatListView) {
                 try {
                     ChatListView chatListView = (ChatListView) currentView;
                     chatListView.updateChatListView();
@@ -156,6 +163,7 @@ public class WebSocketService {
     private class MessageStompSessionHandler extends StompSessionHandlerAdapter{
         @Override
         public void afterConnected(@NonNull StompSession session, @NonNull StompHeaders connectedHeaders) {
+            System.out.println("connected to message topic");
             session.subscribe(messageTopic, new MessageStompFrameHandler());
         }
 
@@ -168,6 +176,7 @@ public class WebSocketService {
     private class FriendStompSessionHandler extends StompSessionHandlerAdapter{
         @Override
         public void afterConnected(@NonNull StompSession session, @NonNull StompHeaders connectedHeaders) {
+            System.out.println("connected to friend topic");
             session.subscribe(friendTopic, new FriendStompFrameHandler());
         }
 
@@ -180,6 +189,7 @@ public class WebSocketService {
     private class ChatRoomStompSessionHandler extends StompSessionHandlerAdapter{
         @Override
         public void afterConnected(@NonNull StompSession session, @NonNull StompHeaders connectedHeaders) {
+            System.out.println("connected to chatroom topic");
             session.subscribe(chatRoomTopic, new ChatRoomStompFrameHandler());
         }
 
@@ -189,7 +199,7 @@ public class WebSocketService {
         }
     }
 
-    public void subscribeMessages() throws Exception {
+    private void subscribeMessages() throws Exception {
         // Connect to the WebSocket server
         StompSessionHandler sessionHandler = new MessageStompSessionHandler();
         messageSession = stompClient.connectAsync(serverUrl, sessionHandler).get(5, TimeUnit.SECONDS);
@@ -197,31 +207,36 @@ public class WebSocketService {
 
     public void subscribeFriendApplication() throws Exception {
         // Connect to the WebSocket server
+        disconnectFriendSession();
         StompSessionHandler sessionHandler = new FriendStompSessionHandler();
         friendSession = stompClient.connectAsync(serverUrl, sessionHandler).get(5, TimeUnit.SECONDS);
     }
 
     public void subscribeChatRoomUpdate() throws Exception {
         // Connect to the WebSocket server
+        disconnectChatRoomSession();
         StompSessionHandler sessionHandler = new ChatRoomStompSessionHandler();
         chatroomSession = stompClient.connectAsync(serverUrl, sessionHandler).get(5, TimeUnit.SECONDS);
     }
 
-    public void updateCurrentChatRoom(String currentChatRoomId) throws Exception {
+    public void subscribeCurrentChatRoomMessage(String currentChatRoomId) throws Exception {
         messageTopic = "/topic/messages/" + currentChatRoomId;
         disconnectMessageSession();
         subscribeMessages();
     }
 
     public void disconnectMessageSession() {
-        messageSession.disconnect();
+        if (messageSession != null)
+            messageSession.disconnect();
     }
     
     public void disconnectFriendSession() {
-        friendSession.disconnect();
+        if (friendSession != null)
+            friendSession.disconnect();
     }
 
     public void disconnectChatRoomSession() {
-        chatroomSession.disconnect();
+        if (chatroomSession != null)
+            chatroomSession.disconnect();
     }
 }
