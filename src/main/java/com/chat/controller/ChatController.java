@@ -31,14 +31,12 @@ import javafx.stage.Stage;
 
 public class ChatController {
 
-    private ChatItemList chatItemList; // 存储聊天项列表
     private final ChatRoomService chatRoomService;
     private final AuthService authService;
     private final MessageService messageService;
 
     public ChatController() throws Exception {
         // 初始化聊天项列表
-        this.chatItemList = new ChatItemList();
         this.chatRoomService = new ChatRoomService();
         this.authService = new AuthService();
         this.messageService = new MessageService();
@@ -66,6 +64,7 @@ public class ChatController {
      * @return 返回当前的聊天窗口列表
      */
     public ChatItemList getChatItemList(String userId) throws Exception {
+        ChatItemList chatItemList = new ChatItemList(); // 存储聊天项列表
         Set<String> chatRoomIdSet = authService.getChatRoomIdSet(userId);
         if (chatRoomIdSet.isEmpty()) return new ChatItemList();
         for (String chatRoomId: chatRoomIdSet) {
