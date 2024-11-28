@@ -120,6 +120,8 @@ public class LoginView {
 package com.chat.view.auth;
 
 import com.chat.controller.AuthController;
+import com.chat.util.CurrentViewContext;
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -202,6 +204,7 @@ public class LoginView {
         stage.setScene(scene);
         stage.setTitle("Sign in");
         stage.show();
+        CurrentViewContext.getInstance().setCurrentView(this);
     }
 
     // Getter methods for user input fields

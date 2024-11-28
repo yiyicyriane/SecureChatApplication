@@ -21,9 +21,11 @@ import com.chat.model.ChatRoom;
 import com.chat.model.ChatWindow;
 
 import com.chat.model.Message;
+import com.chat.model.UserServer;
 import com.chat.service.AuthService;
 import com.chat.service.ChatRoomService;
 import com.chat.service.MessageService;
+import com.chat.util.CurrentUserContext;
 import com.chat.util.TimestampFormatter;
 
 public class ChatController {
@@ -61,7 +63,8 @@ public class ChatController {
      * @return 返回当前的聊天窗口列表
      */
 
-    public ChatItemList getChatItemList(String userId) throws Exception {
+    public ChatItemList getChatItemList() throws Exception {
+        String userId = currentUserId();
         ChatItemList chatItemList = new ChatItemList(); // 存储聊天项列表
         Set<String> chatRoomIdSet = authService.getChatRoomIdSet(userId);
         if (chatRoomIdSet.isEmpty()) return new ChatItemList();
@@ -79,21 +82,40 @@ public class ChatController {
 
 
     //我需要的是model里的ChatWindow里的数据，因为是从聊天列表里点击才会进入和某一个人的聊天对话框，所以会传入这个chatroom的Id.
-    public ChatWindow getChatWindowById (String chatRoomId){
-
+    public ChatWindow getChatWindowById (String chatRoomId) throws Exception{
+        ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
+        String userId = currentUserId();
+        String chatRoomName = getChatRoomName(chatRoom, userId);
+        String profile = "";
+        if (!chatRoom.isGroupChatRoom()) {
+            List<String> memberIdList = chatRoom.getMemberIdList();
+            memberIdList.remove(userId);
+            String friendId = memberIdList.getFirst();
+            UserServer friend = authService.getContact(friendId);
+            profile = friend.getProfile();
+        }
+        ChatWindow chatWindow = new ChatWindow(chatRoomId, chatRoomName, chatRoom.isGroupChatRoom(), 
+            profile, chatRoom.getMemberIdList(), messageService.getMessages(chatRoomId));
+        return chatWindow;
     }
 
     //用于在view里判断sender是不是当前的用户，以及获取当前发送的信息的senderid
     public String currentUserId () {
-
+        return CurrentUserContext.getInstance().getCurrentUser().getUserId();
     }
 
     //把我在聊天输入框里输入的内容加到后端。
-    public void addMessageToChatRoom (String chatRoomId, String senderId, String newMessage,long timestamp){
+    public boolean addMessageToChatRoom (Message message) throws Exception {
+        String messageSendResponse = messageService.sendMessage(message.getChatRoomId(), message);
+        if (messageSendResponse.equals("Message sent."))
+            return true;
+        else
+            return false;
     }
 
     //把我在聊天记录里想删掉的自己的那条聊天记录从后端删除。
-    public void removeMessageFromChatRoom (String chatRoomId,int index){
+    public void removeMessageFromChatRoom (String chatRoomId, long timestamp) throws Exception{
+        messageService.deleteMessage(chatRoomId, timestamp);
     }
 
 }

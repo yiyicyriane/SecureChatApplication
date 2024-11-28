@@ -4,13 +4,10 @@ import com.chat.controller.ChatController;
 import com.chat.model.ChatItem;
 import com.chat.model.ChatItemList;
 import com.chat.util.ControllerManager;
-<<<<<<< HEAD
 import com.chat.util.CurrentUserContext;
-
-=======
+import com.chat.util.CurrentViewContext;
 import com.chat.view.contacts.ContactListView;
 import com.chat.view.settings.ProfileSettingsView;
->>>>>>> a8fbcc6 (ChatWindowView finish, TODO ChatController)
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,6 +22,8 @@ import javafx.stage.Stage;
 public class ChatListView extends Application {
     private VBox chatList; // 显示聊天列表的容器
     private ChatController chatController; //存储chatcontroller的实例
+    private ChatItemList chatItemList;
+    private Stage stage;
 
     public ChatListView() throws Exception {
         this.chatList = new VBox(10); // 初始化聊天列表容器
@@ -53,10 +52,17 @@ public class ChatListView extends Application {
         root.getChildren().add(bottomBar);
 
         // 设置场景和舞台
+        this.stage = stage;
         Scene scene = new Scene(root, 400, 600);
         stage.setTitle("Chat List");
         stage.setScene(scene);
         stage.show();
+
+        CurrentViewContext.getInstance().setCurrentView(this);
+    }
+
+    public void updateChatListView() throws Exception {
+        start(stage);
     }
 
     /**
@@ -65,9 +71,8 @@ public class ChatListView extends Application {
     public void updateChatList() throws Exception {
         chatList.getChildren().clear(); // 清空旧的聊天项
 
-        String userId = CurrentUserContext.getInstance().getCurrentUser().getUserId();
         // 从控制器获取最新的 ChatItemList 数据
-        ChatItemList chatItemList = chatController.getChatItemList(userId);
+        chatItemList = chatController.getChatItemList();
 
         // 遍历每个 ChatItem 并添加到界面上
         for (ChatItem chatItem : chatItemList.getChatItemList()) {
@@ -103,7 +108,12 @@ public class ChatListView extends Application {
         // 为聊天框添加点击事件
         chatItemBox.setOnMouseClicked((MouseEvent event) -> {
            // chatController.openChatWindow(chatItem.getChatRoomId()); // 调用控制器打开聊天窗口
-            new ChatWindowView(chatItem.getChatRoomId()).start(new Stage()); //以新窗口的形式打开。
+            try {
+                new ChatWindowView(chatItem.getChatRoomId()).start(new Stage());
+            } catch (Exception e) {
+                System.err.println("New ChatWindowView error");
+                e.printStackTrace();
+            } //以新窗口的形式打开。
         });
 
         return chatItemBox;

@@ -16,7 +16,7 @@ public class ChatWindow {
     private boolean isGroupChatRoom;
     private String profilePicture;
     private List<String> memberIdList;
-    private List<String> messageList;
+    private List<Message> messageList;
 
     // get copy of memberIdList
     public List<String> getMemberIdList() {
@@ -28,11 +28,11 @@ public class ChatWindow {
     }
 
     // get copy of messageList
-    public List<String> getMessageList() {
+    public List<Message> getMessageList() {
         return new ArrayList<>(messageList);
     }
 
-    public void setMessageList(List<String> messagelist) {
+    public void setMessageList(List<Message> messagelist) {
         this.messageList = new ArrayList<>(messagelist);
     }
 }

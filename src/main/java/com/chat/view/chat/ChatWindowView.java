@@ -1,8 +1,12 @@
 package com.chat.view.chat;
 
 import com.chat.model.ChatWindow;
+import com.chat.model.Message;
 import com.chat.controller.ChatController;
 import com.chat.util.ControllerManager;
+import com.chat.util.CurrentViewContext;
+import com.chat.util.TimestampFormatter;
+
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -15,18 +19,19 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ChatWindowView extends Application {
 
     private String chatRoomId; // Chat room ID
     private ChatWindow chatWindow; // ChatWindow object holding data
-    private List<String> messageList; // List of chat messages
-    private long timestamp;
+    private List<Message> messageList; // List of chat messages
 
     private ChatController chatController;
+    private Stage stage;
 
-    public ChatWindowView(String chatRoomId) {
+    public ChatWindowView(String chatRoomId) throws Exception {
         this.chatRoomId = chatRoomId;
         this.chatController = ControllerManager.getInstance().getChatController();
         this.chatWindow = chatController.getChatWindowById(chatRoomId); // Get chat window data
@@ -34,15 +39,21 @@ public class ChatWindowView extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws Exception {
+        this.chatWindow = chatController.getChatWindowById(chatRoomId); // Get updated chat window data
+        this.messageList = chatWindow.getMessageList(); // Update message list
+
         // Build chat window layout
         VBox mainLayout = createChatLayout();
 
         // Configure scene and stage
         Scene scene = new Scene(mainLayout, 400, 600);
+        stage = primaryStage;
         primaryStage.setScene(scene);
         primaryStage.setTitle("Chat with " + chatWindow.getChatRoomName());
         primaryStage.show();
+
+        CurrentViewContext.getInstance().setCurrentView(this);
     }
 
     private VBox createChatLayout() {
@@ -76,12 +87,11 @@ public class ChatWindowView extends Application {
         chatBox.setStyle("-fx-padding: 10;");
 
         // Loop through message list and generate chat messages
-        for (String messageData : messageList) {
+        for (Message messageData : messageList) {
             // message structure: "String chatRoomId, String senderId,String content,long timestamp"
-            String[] messageParts = messageData.split("\\|");
-            String senderId = messageParts[1];
-            String content = messageParts[2];
-            String timestamp = messageParts[3];
+            String senderId = messageData.getSenderId();
+            String content = messageData.getContent();
+            String timestamp = TimestampFormatter.timestampToString(messageData.getTimestamp());
 
             VBox messageBox = new VBox(5);
 
@@ -112,7 +122,7 @@ public class ChatWindowView extends Application {
 
             // Add delete button for user messages 如果senderId和当前用户id相等，则在它的那条聊天记录上加delete键
             if (senderId.equals(chatController.currentUserId())) {
-                messageBox.setOnMouseEntered(event -> addDeleteOption(messageBox, messageList.indexOf(messageData)));
+                messageBox.setOnMouseEntered(event -> addDeleteOption(messageBox, messageData.getTimestamp()));
                 messageBox.setOnMouseExited(event -> removeDeleteOption(messageBox));
             }
 
@@ -137,11 +147,28 @@ public class ChatWindowView extends Application {
         Button sendButton = new Button("Send");
         sendButton.setStyle("-fx-background-color: #55AD9B; -fx-text-fill: white;");
         sendButton.setOnAction(event -> {
-            String newMessage = inputField.getText();
-            if (!newMessage.trim().isEmpty()) {
-                chatController.addMessageToChatRoom(chatRoomId, chatController.currentUserId(), newMessage, timestamp); // Add message using controller
-                inputField.clear();
-                updateChatWindow(); // Update chat window after sending a message
+            String newMessageContent = inputField.getText();
+            if (!newMessageContent.trim().isEmpty()) {
+                Message newMessage = new Message(chatRoomId, chatController.currentUserId(), newMessageContent, TimestampFormatter.localDateTimeToTimestamp(LocalDateTime.now()));
+                try {
+                    if (chatController.addMessageToChatRoom(newMessage)) {
+                        inputField.clear();
+                        updateChatWindow();                        
+                    }
+                    else {
+                        // chat room deleted by others
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Message Sent Failed");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Invalid Recipient.");
+                        alert.showAndWait();
+                        stage.close();
+                        new ChatListView().start(new Stage());
+                    }
+                } catch (Exception e) {
+                    System.err.println("Send message error");
+                    e.printStackTrace();
+                } // Add message using controller
             }
         });
 
@@ -169,12 +196,17 @@ public class ChatWindowView extends Application {
         membersStage.show();
     }
 
-    private void addDeleteOption(VBox messageBox, int index) {
+    private void addDeleteOption(VBox messageBox, long timestamp) {
         Button deleteButton = new Button("Delete");
         deleteButton.setStyle("-fx-background-color: #ff6666; -fx-text-fill: white;");
         deleteButton.setOnAction(event -> {
-            chatController.removeMessageFromChatRoom(chatRoomId, index); // Remove message using controller
-            updateChatWindow(); // Update chat window after deletion
+            try {
+                chatController.removeMessageFromChatRoom(chatRoomId, timestamp);
+                updateChatWindow(); // Update chat window after deletion
+            } catch (Exception e) {
+                System.err.println("Delete message and refresh view error");
+                e.printStackTrace();
+            }
         });
         messageBox.getChildren().add(deleteButton);
     }
@@ -185,10 +217,8 @@ public class ChatWindowView extends Application {
         }
     }
 
-    public void updateChatWindow() {
-        this.chatWindow = chatController.getChatWindowById(chatRoomId); // Get updated chat window data
-        this.messageList = chatWindow.getMessageList(); // Update message list
-        start(new Stage()); // Refresh the chat window
+    public void updateChatWindow() throws Exception {
+        start(stage); // Refresh the chat window
     }
 
 }
