@@ -130,7 +130,17 @@ public class ChatListView extends Application {
         Button settingsButton = new Button("Settings");
 
         chatsButton.setOnAction(e -> System.out.println("Chats clicked"));
-        contactsButton.setOnAction(e -> new ContactListView().start(stage)); // 打开联系人视图
+        contactsButton.setOnAction(e -> {
+            System.out.println("Navigate to Contact view");
+            ContactListView contactListView = null;
+            try {
+                contactListView = new ContactListView();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            contactListView.start(stage);
+        }); // 打开联系人视图
+
         settingsButton.setOnAction(e -> new ProfileSettingsView().start(stage)); // 打开设置视图
 
         bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);

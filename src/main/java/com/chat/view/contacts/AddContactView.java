@@ -1,6 +1,6 @@
 package com.chat.view.contacts;
 
-import javafx.application.Application;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,51 +10,57 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+
 import java.util.function.Consumer;
 
-public class AddContactView extends Application {
+
+public class AddContactView {
+
 
     private Consumer<String> onContactAdded;
 
-    public void start(Stage primaryStage, Consumer<String> onContactAdded) {
+
+    // show() 方法，用来展示界面
+    public void show(Stage primaryStage, Consumer<String> onContactAdded) {
         this.onContactAdded = onContactAdded;
 
-        // Create the root layout
-        VBox root = new VBox(10);
-        root.setAlignment(Pos.CENTER_LEFT); // Align to the left
-        root.setPadding(new Insets(15)); // Add some padding
 
-        // Add instruction label
+        // 创建根布局
+        VBox root = new VBox(10);
+        root.setAlignment(Pos.CENTER_LEFT); // 左对齐
+        root.setPadding(new Insets(15)); // 添加内边距
+
+
+        // 添加说明标签
         Label instructionLabel = new Label("Please enter the user's/group's ID:");
         instructionLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
 
-        // Create the contact ID input field
+
+        // 创建联系人ID输入框
         TextField contactIdField = new TextField();
         contactIdField.setPromptText("Enter Contact ID");
-        contactIdField.setMaxWidth(250); // Optional: Limit the width of the text field
+        contactIdField.setMaxWidth(250); // 限制文本框宽度
 
-        // Create the add button
-        Button addButton = new Button("Add");
+
+        // 创建添加按钮
+        Button addButton = new Button("Add/Join");
         addButton.setOnAction(e -> {
             String newContact = contactIdField.getText().trim();
             if (!newContact.isEmpty() && onContactAdded != null) {
-                onContactAdded.accept(newContact);
-                primaryStage.close(); // Close the window after adding the contact
+                onContactAdded.accept(newContact); // 触发回调函数，传递新的联系人ID
+                primaryStage.close(); // 添加完成后关闭窗口
             }
         });
 
-        // Add all elements to the root layout
+
+        // 将所有元素添加到根布局
         root.getChildren().addAll(instructionLabel, contactIdField, addButton);
 
-        // Create and show the scene
+
+        // 创建并显示场景
         Scene scene = new Scene(root, 300, 200);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Add Contact");
+        primaryStage.setTitle("Add Contact/Join Group");
         primaryStage.show();
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        start(primaryStage, null);
     }
 }

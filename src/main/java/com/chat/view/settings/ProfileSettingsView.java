@@ -157,7 +157,16 @@ public class ProfileSettingsView extends Application {
                 e1.printStackTrace();
             }
         });
-        contactsButton.setOnAction(e -> openView(new ContactListView(), stage));
+        contactsButton.setOnAction(e -> {
+            System.out.println("Navigate to Contact view");
+            ContactListView contactListView = null;
+            try {
+                contactListView = new ContactListView();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            contactListView.start(stage);
+        });
         settingsButton.setOnAction(e -> System.out.println("Already in Settings"));
 
         bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);

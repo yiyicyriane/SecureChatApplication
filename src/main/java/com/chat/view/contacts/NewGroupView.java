@@ -1,7 +1,7 @@
+/*
 package com.chat.view.contacts;
 
-import com.chat.model.ChatRoom;
-import javafx.application.Application;
+import com.chat.model.Group;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,91 +9,241 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class NewGroupView extends Application {
-    private final Set<String> existingGroupIds = new HashSet<>(); // 存储已存在的群组ID，用于唯一性校验
-    private Consumer<String> onGroupCreated; // 创建群组成功后的回调函数
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        start(primaryStage, null);
-    }
+public class NewGroupView {
+    private final Set<String> existingGroupIds = new HashSet<>();
+    private Consumer<String> onGroupCreated;
 
-    public void start(Stage primaryStage, Consumer<String> onGroupCreated) {
+
+    private List<String> contacts = List.of("user1", "user2", "user3", "user4"); // Simulated contact list
+
+
+    // show() 方法，用来展示新建群组界面
+    public void show(Stage primaryStage, Consumer<String> onGroupCreated) {
         this.onGroupCreated = onGroupCreated;
 
-        // 创建根布局
+
+        // Step 1: Create Group Name Input
         VBox root = new VBox(15);
         root.setPadding(new Insets(15));
         root.setAlignment(Pos.CENTER);
 
-        // 群组ID输入框
-        Label groupIdLabel = new Label("Enter Group ID (must start with 'G'):");
-        TextField groupIdField = new TextField();
-        groupIdField.setPromptText("e.g., G12345");
 
-        // 群组名称输入框
+        // Group Name Input Field
         Label groupNameLabel = new Label("Enter Group Name:");
         TextField groupNameField = new TextField();
         groupNameField.setPromptText("Enter your group name");
 
-        // 创建按钮
+
+        // Create Group Button (Initially disabled)
         Button createButton = new Button("Create Group");
-        createButton.setOnAction(e -> {
-            String groupId = groupIdField.getText().trim();
-            String groupName = groupNameField.getText().trim();
+        createButton.setDisable(true);
 
-            // 验证群组ID
-            if (!validateGroupId(groupId)) {
-                showAlert("Invalid Group ID", "Group ID must start with 'G' and be unique.");
-                return;
-            }
 
-            // 验证群组名称
-            if (groupName.isEmpty()) {
-                showAlert("Invalid Group Name", "Group name cannot be empty.");
-                return;
-            }
-
-            // 模拟群组创建
-            String adminUserId = "admin123"; // 当前用户的userId，可替换为实际登录用户
-            ChatRoom newGroup = new ChatRoom(groupId, true, List.of(adminUserId), groupName);
-            existingGroupIds.add(groupId);
-
-            // 调用回调函数传递新群组ID
-            if (onGroupCreated != null) {
-                onGroupCreated.accept(groupId);
-            }
-
-            // 显示成功提示框
-            showAlert("Group Created",
-                    "You have successfully created a new group: " +
-                            groupName + "\nGroup ID: " + groupId +
-                            "\nPlease copy the Group ID and share it with your friends to join.");
-
-            // 关闭窗口
-            primaryStage.close();
+        // Enable button if group name is not empty
+        groupNameField.textProperty().addListener((obs, oldText, newText) -> {
+            createButton.setDisable(newText.trim().isEmpty());
         });
 
-        root.getChildren().addAll(groupIdLabel, groupIdField, groupNameLabel, groupNameField, createButton);
 
-        // 设置场景
+        createButton.setOnAction(e -> {
+            String groupName = groupNameField.getText().trim();
+
+
+            // Step 2: Show contacts list to select members
+            showContactListScene(primaryStage, groupName);
+        });
+
+
+        root.getChildren().addAll(groupNameLabel, groupNameField, createButton);
+
+
+        // Set initial scene
         Scene scene = new Scene(root, 350, 250);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Create New Group");
         primaryStage.show();
     }
 
-    // 验证群组ID
-    private boolean validateGroupId(String groupId) {
-        return groupId.startsWith("G") && !existingGroupIds.contains(groupId) && groupId.length() > 1;
+
+    private void showContactListScene(Stage primaryStage, String groupName) {
+        // Step 3: Create a new scene to display contacts
+        VBox contactsRoot = new VBox(15);
+        contactsRoot.setPadding(new Insets(15));
+        contactsRoot.setAlignment(Pos.CENTER);
+
+
+        // Contact List (multiple selection)
+        Label contactsLabel = new Label("Select Contacts to Invite:");
+
+
+        ListView<String> contactsListView = new ListView<>();
+        contactsListView.getItems().addAll(contacts);
+        contactsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+
+        // Invite Friends Button
+        Button inviteButton = new Button("Invite Friends");
+        inviteButton.setOnAction(e -> {
+            List<String> selectedContacts = contactsListView.getSelectionModel().getSelectedItems();
+            if (!selectedContacts.isEmpty()) {
+                // Step 4: Create the group with selected members
+                String adminUserId = "admin123"; // Current admin user ID
+                Group newGroup = new Group("G12345", groupName, adminUserId, selectedContacts);
+                existingGroupIds.add(newGroup.getGroupId());
+
+
+                // Notify success and close the window
+                if (onGroupCreated != null) {
+                    onGroupCreated.accept(newGroup.getGroupId());
+                }
+
+
+                showAlert("Group Created", "Group successfully created with " + selectedContacts.size() + " members.");
+                primaryStage.close();
+            }
+        });
+
+
+        contactsRoot.getChildren().addAll(contactsLabel, contactsListView, inviteButton);
+
+
+        // Set the new scene
+        Scene contactsScene = new Scene(contactsRoot, 400, 300);
+        primaryStage.setScene(contactsScene);
     }
 
-    // 显示提示框
+
+    // Show alert dialog
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}
+ */
+
+package com.chat.view.contacts;
+
+import com.chat.util.ControllerManager;
+import com.chat.controller.ContactController;
+import com.chat.model.MembersInContactList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
+public class NewGroupView {
+    private ContactController contactController;
+    private BiConsumer<String, List<String>> onGroupCreated; // Callback for group creation
+    private Stage stage;
+
+    public NewGroupView() throws Exception {
+        this.contactController = ControllerManager.getInstance().getContactController();
+    }
+
+
+    // show() method to display the New Group interface
+    public void show(Stage primaryStage, BiConsumer<String, List<String>> onGroupCreated) {
+        stage = primaryStage;
+        this.onGroupCreated = onGroupCreated;
+
+        // Step 1: Create Group Name Input
+        VBox root = new VBox(15);
+        root.setPadding(new Insets(15));
+        root.setAlignment(Pos.CENTER);
+
+        // Group Name Input Field
+        Label groupNameLabel = new Label("Enter Group Name:");
+        TextField groupNameField = new TextField();
+        groupNameField.setPromptText("Enter your group name");
+
+        // Create Group Button (Initially disabled)
+        Button createButton = new Button("Create Group");
+        createButton.setDisable(true);
+
+        // Enable button if group name is not empty
+        groupNameField.textProperty().addListener((obs, oldText, newText) -> {
+            createButton.setDisable(newText.trim().isEmpty());
+        });
+
+        createButton.setOnAction(e -> {
+            String groupName = groupNameField.getText().trim();
+
+            // Step 2: Show contacts list to select members
+            showContactListScene(primaryStage, groupName);
+        });
+
+        root.getChildren().addAll(groupNameLabel, groupNameField, createButton);
+
+        // Set initial scene
+        Scene scene = new Scene(root, 350, 250);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Create New Group");
+        primaryStage.show();
+    }
+
+    private void showContactListScene(Stage primaryStage, String groupName) {
+        // Step 3: Create a new scene to display contacts
+        VBox contactsRoot = new VBox(15);
+        contactsRoot.setPadding(new Insets(15));
+        contactsRoot.setAlignment(Pos.CENTER);
+
+        // Contact List (multiple selection)
+        Label contactsLabel = new Label("Select Contacts to Invite:");
+
+
+        // Fetch all contacts from the controller
+        List<MembersInContactList> allContacts = contactController.getContacts();
+        // Filter out only personal contacts (those with isGroupChatRoom == false)
+        List<MembersInContactList> personalContacts = allContacts.stream()
+                .filter(contact -> !contact.isGroupChatRoom())  // Only personal contacts
+                .collect(Collectors.toList());
+        // Prepare the contact list for display (showing both userId and name)
+        ListView<String> contactsListView = new ListView<>();
+        personalContacts.forEach(contact ->
+                contactsListView.getItems().add(contact.getUserId() + " - " + contact.getName()));
+        // Set up the selection mode for multiple selections
+        contactsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+
+        // Invite Friends Button
+        Button inviteButton = new Button("Invite Friends");
+        inviteButton.setOnAction(e -> {
+            List<String> selectedContacts = contactsListView.getSelectionModel().getSelectedItems();
+            if (!selectedContacts.isEmpty()) {
+                // Notify success and close the window
+                if (onGroupCreated != null) {
+                    onGroupCreated.accept(groupName, selectedContacts);
+                }
+
+                showAlert("Group Created", "Group successfully created with " + selectedContacts.size() + " members.");
+                primaryStage.close();
+            }
+        });
+
+        contactsRoot.getChildren().addAll(contactsLabel, contactsListView, inviteButton);
+
+        // Set the new scene
+        Scene contactsScene = new Scene(contactsRoot, 400, 300);
+        primaryStage.setScene(contactsScene);
+    }
+
+    // Show alert dialog
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
