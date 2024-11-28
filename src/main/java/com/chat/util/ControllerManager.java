@@ -32,7 +32,7 @@ public class ControllerManager {
     }
 
     // 获取 ContactController 的实例
-    public ContactController getContactController() {
+    public ContactController getContactController() throws Exception {
         if (contactController == null) {
             contactController = new ContactController();
         }

@@ -49,7 +49,7 @@ public class ChatController {
         System.out.println("Opening chat window for room: " + chatRoomId);
 
         // 打开新的聊天窗口
-        new ChatWindowView(chatRoomId).start(new Stage()); //以新窗口的形式打开。
+        // new ChatWindowView(chatRoomId).start(new Stage()); //以新窗口的形式打开。
     }
 
     /**

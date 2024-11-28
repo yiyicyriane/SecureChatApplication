@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor                // For frameworks like Spring to create empty objects
-@RequiredArgsConstructor         // constructor with NonNull args
+// @RequiredArgsConstructor         // constructor with NonNull args
 @AllArgsConstructor               // Optional if you still want a constructor with all args
 public class ChatWindow {
     private String chatRoomId;

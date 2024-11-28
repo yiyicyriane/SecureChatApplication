@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor                // For frameworks like Spring to create empty objects
-@RequiredArgsConstructor         // constructor with NonNull args
+// @RequiredArgsConstructor         // constructor with NonNull args
 @AllArgsConstructor               // Optional if you still want a constructor with all args
 public class ChatItemList {
     private List<ChatItem> chatItemList = new ArrayList<>(); // Stores a list of ChatItem objects.
