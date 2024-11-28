@@ -4,8 +4,13 @@ import com.chat.controller.ChatController;
 import com.chat.model.ChatItem;
 import com.chat.model.ChatItemList;
 import com.chat.util.ControllerManager;
+<<<<<<< HEAD
 import com.chat.util.CurrentUserContext;
 
+=======
+import com.chat.view.contacts.ContactListView;
+import com.chat.view.settings.ProfileSettingsView;
+>>>>>>> a8fbcc6 (ChatWindowView finish, TODO ChatController)
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -97,7 +102,8 @@ public class ChatListView extends Application {
 
         // 为聊天框添加点击事件
         chatItemBox.setOnMouseClicked((MouseEvent event) -> {
-            chatController.openChatWindow(chatItem.getChatRoomId()); // 调用控制器打开聊天窗口
+           // chatController.openChatWindow(chatItem.getChatRoomId()); // 调用控制器打开聊天窗口
+            new ChatWindowView(chatItem.getChatRoomId()).start(new Stage()); //以新窗口的形式打开。
         });
 
         return chatItemBox;
@@ -114,8 +120,8 @@ public class ChatListView extends Application {
         Button settingsButton = new Button("Settings");
 
         chatsButton.setOnAction(e -> System.out.println("Chats clicked"));
-        contactsButton.setOnAction(e -> chatController.openContactListView(stage)); // 打开联系人视图
-        settingsButton.setOnAction(e -> chatController.openSettingsView(stage)); // 打开设置视图
+        contactsButton.setOnAction(e -> new ContactListView().start(stage)); // 打开联系人视图
+        settingsButton.setOnAction(e -> new ProfileSettingsView().start(stage)); // 打开设置视图
 
         bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);
         return bottomBar;

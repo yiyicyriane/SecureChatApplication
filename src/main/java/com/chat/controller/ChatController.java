@@ -19,6 +19,7 @@ import com.chat.model.ChatItem;
 import com.chat.model.ChatItemList;
 import com.chat.model.ChatRoom;
 import com.chat.model.ChatWindow;
+
 import com.chat.model.Message;
 import com.chat.service.AuthService;
 import com.chat.service.ChatRoomService;
@@ -28,6 +29,9 @@ import com.chat.view.chat.ChatWindowView;
 import com.chat.view.contacts.ContactListView;
 import com.chat.view.settings.ProfileSettingsView;
 import javafx.stage.Stage;
+
+
+
 
 public class ChatController {
 
@@ -63,6 +67,7 @@ public class ChatController {
      *
      * @return 返回当前的聊天窗口列表
      */
+
     public ChatItemList getChatItemList(String userId) throws Exception {
         ChatItemList chatItemList = new ChatItemList(); // 存储聊天项列表
         Set<String> chatRoomIdSet = authService.getChatRoomIdSet(userId);
@@ -77,39 +82,26 @@ public class ChatController {
             chatItemList.addChatItem(chatItem);
         }
         return chatItemList;
+
+    public ChatItemList getChatItemList() {
+        return null;
+
     }
 
 
-    /**
-     * 根据chatRoomid打开聊天窗口
-     *
-     * @param chatRoomId 聊天室的ID
-     */
-    public void openChatWindow(String chatRoomId) {
-        // 根据 chatRoomId 查找对应的聊天内容
-        System.out.println("Opening chat window for room: " + chatRoomId);
-
-        // 打开新的聊天窗口
-        // new ChatWindowView(chatRoomId).start(new Stage()); //以新窗口的形式打开。
+    //我需要的是model里的ChatWindow里的数据，因为是从聊天列表里点击才会进入和某一个人的聊天对话框，所以会传入这个chatroom的Id.
+    public ChatWindow getChatWindowById(String chatRoomId) {
     }
 
-    /**
-     * 打开联系人视图
-     *
-     * @param stage 当前的舞台，用于加载联系人视图
-     */
-    public void openContactListView(Stage stage) {
-        // 通过新的窗口打开联系人视图
-        new ContactListView().start(stage);
+    //用于在view里判断sender是不是当前的用户，以及获取当前发送的信息的senderid
+    public String currentUserId() {
     }
 
-    /**
-     * 打开设置视图
-     *
-     * @param stage 当前的舞台，用于加载设置视图
-     */
-    public void openSettingsView(Stage stage) {
-        // 通过新的窗口打开设置视图
-        new ProfileSettingsView().start(stage);
+    //把我在聊天输入框里输入的内容加到后端。
+    public void addMessageToChatRoom(String chatRoomId, String senderId, String newMessage, long timestamp) {
+    }
+
+    //把我在聊天记录里想删掉的自己的那条聊天记录从后端删除。
+    public void removeMessageFromChatRoom(String chatRoomId, int index) {
     }
 }
