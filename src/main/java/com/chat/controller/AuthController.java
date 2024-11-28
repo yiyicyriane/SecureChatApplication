@@ -3,7 +3,7 @@ package com.chat.controller;
 import com.chat.model.User;
 import com.chat.model.UserServer;
 import com.chat.service.AuthService;
-import com.chat.util.RSAUtil;
+import com.chat.util.HashUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,15 +19,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-import com.chat.util.ControllerManager;
-
 @Data
 @AllArgsConstructor 
 public class AuthController {
     private User registeredUser;
     private UserServer registeredUsersServer;
     private final AuthService authService;
-    private KeyPair keyPair;
+    private String salt;
 
     // Constructor
     public AuthController() throws Exception {
@@ -101,9 +99,10 @@ public class AuthController {
         registeredUser = user;
         // generate a new key pair
         try {
-            keyPair = RSAUtil.generateKeyPair();
-            String publicKey = RSAUtil.publicKeyToString(keyPair.getPublic());
-            registeredUsersServer = new UserServer(registeredUser.getUserId(), registeredUser.getName(), registeredUser.getPassword(), publicKey, registeredUser.getProfilePicture());
+            salt = HashUtil.generateSalt();
+            String password = registeredUser.getPassword();
+            String encryptPassword = HashUtil.passwordHash(password, salt);
+            registeredUsersServer = new UserServer(registeredUser.getUserId(), registeredUser.getName(), encryptPassword, salt, registeredUser.getProfilePicture());
             String response = authService.register(registeredUsersServer);
             if (response.equals("User registered."))
                 return true;
@@ -123,15 +122,15 @@ public class AuthController {
      */
     public boolean login(String userId, String password) {
         try {
-            PublicKey publicKey = RSAUtil.decodePublicKey(authService.getPublicKey(userId));
-            String encryptPassword = RSAUtil.encrypt(password, publicKey);
+            salt = authService.getPublicKey(userId);
+            String encryptPassword = HashUtil.passwordHash(password, salt);
             registeredUsersServer = authService.login(userId, encryptPassword);
             if (registeredUsersServer == null) return false;
 
             // update public key and encrypted password
-            keyPair = RSAUtil.generateKeyPair();
-            String newPublicKey = RSAUtil.publicKeyToString(keyPair.getPublic());
-            String newEncryptPassword = RSAUtil.encrypt(password, keyPair.getPublic());
+            salt = HashUtil.generateSalt();
+            String newPublicKey = salt;
+            String newEncryptPassword = HashUtil.passwordHash(password, salt);
             authService.putPassword(userId, encryptPassword, newEncryptPassword, newPublicKey);
             
             registeredUsersServer.setPassword(newEncryptPassword);
