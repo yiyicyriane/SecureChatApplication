@@ -1,6 +1,7 @@
 package com.chat.view.settings;
 
 import com.chat.util.ControllerManager;
+import com.chat.util.ImageCropUtil;
 import com.chat.view.chat.ChatListView;
 import com.chat.view.contacts.ContactListView;
 import javafx.application.Application;
@@ -73,6 +74,7 @@ public class ProfileSettingsView extends Application {
         profileImageView = new ImageView();
         if (!currentUser.getProfilePicture().isEmpty()) {
             Image profileImage = new Image(currentUser.getProfilePicture()); // Fetch profile picture from currentUser
+            profileImage = ImageCropUtil.cropToSquare(profileImage);
             profileImageView.setImage(profileImage);
             
         }

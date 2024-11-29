@@ -152,6 +152,7 @@ import javafx.scene.control.*; // Import JavaFX control classes (Button, TextFie
 import javafx.scene.layout.GridPane; // For layout management
 import javafx.scene.layout.HBox; // For horizontal layout
 import javafx.scene.layout.VBox; // For vertical layout
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font; // For setting font
 import javafx.stage.FileChooser; // For file chooser dialog
 import javafx.stage.Stage; // For stage (window)
@@ -167,6 +168,7 @@ public class RegisterView {
     private TextField nameField;
     private PasswordField passwordField;
     private ImageView profileImageView;
+    private File profileFile;
 
     // Constructor
     public RegisterView(Stage stage, AuthController authController) {
@@ -219,11 +221,13 @@ public class RegisterView {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.jpeg"));
             fileChooser.setTitle("Choose Profile Picture");
-            File file = fileChooser.showOpenDialog(stage);
-            if (file != null) {
-                Image circularImage = ProfilePictureHandler.createCircularProfilePicture(file);
+            profileFile = fileChooser.showOpenDialog(stage);
+            if (profileFile != null) {
+                Image circularImage = ProfilePictureHandler.createCircularProfilePicture(profileFile);
+                System.out.println("file chose");
                 if (circularImage != null) {
                     profileImageView.setImage(circularImage);
+                    System.out.println("image choosed: " + circularImage);
                 } else {
                     System.out.println("Failed to load profile picture.");
                 }
@@ -232,6 +236,10 @@ public class RegisterView {
 
         profileImageView.setFitWidth(100);
         profileImageView.setFitHeight(100);
+        profileImageView.setPreserveRatio(true);
+        Circle clip = new Circle(40, 40, 40); // Circular clip
+        profileImageView.setClip(clip);
+
         VBox profilePicBox = new VBox(5);
         profilePicBox.getChildren().addAll(profilePicLabel, uploadButton, profileImageView);
         grid.add(profilePicBox, 0, 3);
@@ -243,7 +251,7 @@ public class RegisterView {
             String userId = userIdField.getText();
             String name = nameField.getText();
             String password = passwordField.getText();
-            String profilePicture = profileImageView.getImage() != null ? profileImageView.getImage().getUrl() : "";
+            String profilePicture = profileImageView.getImage() != null ? profileFile.toURI().toString() : "";
             authController.registerUser(userId, name, password, profilePicture);
         });
 
