@@ -226,10 +226,23 @@ public class ContactListView extends Application {
     // Update method to refresh the contacts container
     private void updateContacts() {
         // Update each section (personal and group contacts)
-            VBox personalSection = (VBox) contactsContainer.getChildren().get(0);
-            VBox groupSection = (VBox) contactsContainer.getChildren().get(1);
-            updateContactsList((VBox) personalSection.getChildren().get(1), "Personal Contacts");
-            updateContactsList((VBox) groupSection.getChildren().get(1), "Group Contacts"); 
+        VBox personalSection = (VBox) contactsContainer.getChildren().get(0);
+        VBox groupSection = (VBox) contactsContainer.getChildren().get(1);
+
+        // Get the ScrollPane inside the personal and group sections
+        ScrollPane personalScrollPane = (ScrollPane) personalSection.getChildren().get(1);
+        ScrollPane groupScrollPane = (ScrollPane) groupSection.getChildren().get(1);
+
+        //get content in ScrollPane, and make sure it's VBox
+        VBox personalContactsList = (VBox) personalScrollPane.getContent();
+        VBox groupContactsList = (VBox) groupScrollPane.getContent();
+
+        //call to update the contact list
+        updateContactsList(personalContactsList, "Personal Contacts");
+        updateContactsList(groupContactsList, "Group Contacts");
+
+        //updateContactsList((VBox) personalSection.getChildren().get(1), "Personal Contacts");
+        //updateContactsList((VBox) groupSection.getChildren().get(1), "Group Contacts");
     }
 
     // Create personal contact item
