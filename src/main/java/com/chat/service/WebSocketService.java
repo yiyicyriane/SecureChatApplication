@@ -1,6 +1,7 @@
 package com.chat.service;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.lang.NonNull;
@@ -14,6 +15,8 @@ import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
+import org.springframework.web.socket.sockjs.client.SockJsClient;
+import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import com.chat.util.CurrentChatWindowViewContext;
 import com.chat.util.CurrentUserContext;
@@ -46,7 +49,8 @@ public class WebSocketService {
     }
 
     private WebSocketService() throws Exception {
-        stompClient = new WebSocketStompClient(new StandardWebSocketClient());
+        stompClient = new WebSocketStompClient(new SockJsClient(
+                List.of(new WebSocketTransport(new StandardWebSocketClient()))));
         stompClient.setMessageConverter(new StringMessageConverter());
         String userId = CurrentUserContext.getInstance().getCurrentUser().getUserId();
         // messageTopic = "/topic/messages/currentChatRoomId";
@@ -198,6 +202,7 @@ public class WebSocketService {
 
     public void subscribeFriendApplication() throws Exception {
         // Connect to the WebSocket server
+        System.out.println(serverUrl);
         disconnectFriendSession();
         StompSessionHandler sessionHandler = new FriendStompSessionHandler();
         friendSession = stompClient.connectAsync(serverUrl, sessionHandler).get(5, TimeUnit.SECONDS);

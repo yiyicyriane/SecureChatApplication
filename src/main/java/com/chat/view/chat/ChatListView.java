@@ -61,8 +61,8 @@ public class ChatListView extends Application {
 
         CurrentViewContext.getInstance().setCurrentView(this);
         
-        // WebSocketService.getInstance().subscribeFriendApplication();
-        // WebSocketService.getInstance().subscribeChatRoomUpdate();
+        WebSocketService.getInstance().subscribeFriendApplication();
+        WebSocketService.getInstance().subscribeChatRoomUpdate();
     }
 
     public void updateChatListView() throws Exception {

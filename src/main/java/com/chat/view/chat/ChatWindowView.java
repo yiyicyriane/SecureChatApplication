@@ -62,7 +62,7 @@ public class ChatWindowView extends Application {
 
         CurrentViewContext.getInstance().setCurrentView(this);
 
-        // WebSocketService.getInstance().subscribeCurrentChatRoomMessage(chatRoomId);
+        WebSocketService.getInstance().subscribeCurrentChatRoomMessage(chatRoomId);
     }
 
     private VBox createChatLayout() {
