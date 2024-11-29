@@ -6,6 +6,7 @@ import com.chat.service.WebSocketService;
 import com.chat.controller.ChatController;
 import com.chat.util.ControllerManager;
 import com.chat.util.CurrentViewContext;
+import com.chat.util.ImageCropUtil;
 import com.chat.util.TimestampFormatter;
 
 import javafx.application.Application;
@@ -80,6 +81,7 @@ public class ChatWindowView extends Application {
         }
         else {
             Image chatRoomImage = new Image(chatWindow.getProfilePicture());
+            chatRoomImage = ImageCropUtil.cropToSquare(chatRoomImage);
             chatRoomImageView = new ImageView(chatRoomImage);
             chatRoomImageView.setFitWidth(40);
             chatRoomImageView.setFitHeight(40);

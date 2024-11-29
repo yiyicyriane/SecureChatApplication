@@ -28,6 +28,8 @@ import com.chat.view.chat.ChatListView;
 import com.chat.view.chat.ChatWindowView;
 import com.chat.view.contacts.ContactListView;
 
+import javafx.application.Platform;
+
 public class WebSocketService {
     private static WebSocketService instance;
 
@@ -70,15 +72,17 @@ public class WebSocketService {
             System.out.println("subscribe: " + messageTopic);
             // update chatroom messages
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
-            if (currentView != null && currentView instanceof ChatWindowView) {
-                try {
-                    ChatWindowView chatWindowView = CurrentChatWindowViewContext.getInstance().getChatWindowView();
-                    chatWindowView.updateChatWindow();
-                } catch (Exception e) {
-                    System.err.println("Refresh chat window view error");
-                    e.printStackTrace();
+            Platform.runLater(() -> {
+                if (currentView != null && currentView instanceof ChatWindowView) {
+                    try {
+                        ChatWindowView chatWindowView = CurrentChatWindowViewContext.getInstance().getChatWindowView();
+                        chatWindowView.updateChatWindow();
+                    } catch (Exception e) {
+                        System.err.println("Refresh chat window view error");
+                        e.printStackTrace();
+                    }
                 }
-            }
+            });
         }
     }
 
@@ -96,28 +100,30 @@ public class WebSocketService {
             String friendId = (String) payload;
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
             if (friendId != null) {
-                if (friendId.equals("Friend list update")) {
-                    // friend list update notice
-                    if (currentView != null && currentView instanceof ContactListView) {
-                        ContactListView contactListView = (ContactListView) currentView;
-                        contactListView.updateContactsListView();
-                    }
-                }
-                else if (!(currentView == null || currentView instanceof LoginView)) {
-                    // show friend application notice, update contactview
-                    try {
-                        if (FriendApplicationNotice.notice(friendId)) {
-                            authService.postNewFriendApplicationSenderIdSet(CurrentUserContext.getInstance().getCurrentUser().getUserId(), friendId);
-                            if (currentView instanceof ContactListView) {
-                                ContactListView contactListView = (ContactListView) currentView;   
-                                contactListView.updateContactsListView();                   
-                            }            
+                Platform.runLater(() -> {
+                    if (friendId.equals("Friend list update")) {
+                        // friend list update notice
+                        if (currentView != null && currentView instanceof ContactListView) {
+                            ContactListView contactListView = (ContactListView) currentView;
+                            contactListView.updateContactsListView();
                         }
-                    } catch (Exception e) {
-                        System.err.println("Refresh contact list view error");
-                        e.printStackTrace();
                     }
-                }
+                    else if (!(currentView == null || currentView instanceof LoginView)) {
+                        // show friend application notice, update contactview
+                        try {
+                            if (FriendApplicationNotice.notice(friendId)) {
+                                authService.postNewFriendApplicationSenderIdSet(CurrentUserContext.getInstance().getCurrentUser().getUserId(), friendId);
+                                if (currentView instanceof ContactListView) {
+                                    ContactListView contactListView = (ContactListView) currentView;   
+                                    contactListView.updateContactsListView();                   
+                                }            
+                            }
+                        } catch (Exception e) {
+                            System.err.println("Refresh contact list view error");
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         }
     }
@@ -134,24 +140,26 @@ public class WebSocketService {
             // receivedFriendApplicationFuture.complete((String) payload);
             System.out.println("subscribe: " + chatRoomTopic);
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
-            if (currentView != null && currentView instanceof ChatListView) {
-                try {
-                    ChatListView chatListView = (ChatListView) currentView;
-                    chatListView.updateChatListView();
-                } catch (Exception e) {
-                    System.err.println("Refresh chat list view error");
-                    e.printStackTrace();
+            Platform.runLater(() -> {
+                if (currentView != null && currentView instanceof ChatListView) {
+                    try {
+                        ChatListView chatListView = (ChatListView) currentView;
+                        chatListView.updateChatListView();
+                    } catch (Exception e) {
+                        System.err.println("Refresh chat list view error");
+                        e.printStackTrace();
+                    }
                 }
-            }
-            else if (currentView instanceof ContactListView) {
-                try {
-                    ContactListView contactListView = (ContactListView) currentView;
-                    contactListView.updateContactsListView();
-                } catch (Exception e) {
-                    System.err.println("Refresh contact list view error");
-                    e.printStackTrace();
+                else if (currentView instanceof ContactListView) {
+                    try {
+                        ContactListView contactListView = (ContactListView) currentView;
+                        contactListView.updateContactsListView();
+                    } catch (Exception e) {
+                        System.err.println("Refresh contact list view error");
+                        e.printStackTrace();
+                    }
                 }
-            }
+            });
         }
     }
 
