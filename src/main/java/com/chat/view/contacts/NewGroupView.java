@@ -185,7 +185,12 @@ public class NewGroupView {
             String groupName = groupNameField.getText().trim();
 
             // Step 2: Show contacts list to select members
-            showContactListScene(primaryStage, groupName);
+            try {
+                showContactListScene(primaryStage, groupName);
+            } catch (Exception e1) {
+                System.err.println("Show contact list error");
+                e1.printStackTrace();
+            }
         });
 
         root.getChildren().addAll(groupNameLabel, groupNameField, createButton);
@@ -195,9 +200,10 @@ public class NewGroupView {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Create New Group");
         primaryStage.show();
+        stage = primaryStage;
     }
 
-    private void showContactListScene(Stage primaryStage, String groupName) {
+    private void showContactListScene(Stage primaryStage, String groupName) throws Exception {
         // Step 3: Create a new scene to display contacts
         VBox contactsRoot = new VBox(15);
         contactsRoot.setPadding(new Insets(15));
@@ -216,7 +222,7 @@ public class NewGroupView {
         // Prepare the contact list for display (showing both userId and name)
         ListView<String> contactsListView = new ListView<>();
         personalContacts.forEach(contact ->
-                contactsListView.getItems().add(contact.getUserId() + " - " + contact.getName()));
+                contactsListView.getItems().add(contact.getUserId())); //  + " - " + contact.getName()));
         // Set up the selection mode for multiple selections
         contactsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -230,8 +236,8 @@ public class NewGroupView {
                 if (onGroupCreated != null) {
                     onGroupCreated.accept(groupName, selectedContacts);
                 }
-
-                showAlert("Group Created", "Group successfully created with " + selectedContacts.size() + " members.");
+                int groupMemberNum = selectedContacts.size() + 1;
+                showAlert("Group " + groupName + "Created", "Group successfully created with " + groupMemberNum + " members.");
                 primaryStage.close();
             }
         });

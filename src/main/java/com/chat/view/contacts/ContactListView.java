@@ -3,6 +3,7 @@ package com.chat.view.contacts;
 import com.chat.controller.ContactController;
 import com.chat.model.MembersInContactList;
 import com.chat.util.ControllerManager;
+import com.chat.util.CurrentViewContext;
 import com.chat.view.chat.ChatListView;
 import com.chat.view.chat.ChatWindowView;
 import com.chat.view.settings.ProfileSettingsView;
@@ -10,6 +11,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
@@ -67,9 +69,16 @@ public class ContactListView extends Application {
         primaryStage.setTitle("Contact List");
         primaryStage.setScene(scene);
         primaryStage.show();
+        stage = primaryStage;
 
         // Initial update to display contacts
         updateContacts();
+
+        CurrentViewContext.getInstance().setCurrentView(this);
+    }
+
+    public void updateContactsListView() {
+        start(stage);
     }
 
     // Create new chat section
@@ -97,20 +106,37 @@ public class ContactListView extends Application {
         addContactButton.setOnAction(e -> {
             Stage addContactStage = new Stage();
             AddContactView addContactView = new AddContactView();
-            addContactView.show(addContactStage, newContact -> {
-                System.out.println("New contact added: " + newContact);
-                contactController.addContact(contactController.currentUserId(),newContact);
-                updateContacts();  // Refresh the contact list
+            addContactView.show(addContactStage, false, newContact -> {
+                String response = contactController.addContact(contactController.currentUserId(), newContact);
+                System.out.println(response);
+                Alert alert;
+                if (response.equals("Friend application sent.")) {
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Message Sent");
+                    alert.setHeaderText(null);
+                }
+                else {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Message Sent Failed");
+                    alert.setHeaderText(null);
+                }
+                alert.setContentText(response);
+                alert.showAndWait();
             });
         });
 
         joinGroupButton.setOnAction(e -> {
             Stage joinGroupStage = new Stage();
             AddContactView joinGroupView = new AddContactView();
-            joinGroupView.show(joinGroupStage, newContact -> {
+            joinGroupView.show(joinGroupStage, true, newContact -> {
                 System.out.println("New group contact added: " + newContact);
-                contactController.joinGroupContact(contactController.currentUserId(),newContact);
-                updateContacts();  // Refresh the contact list
+                try {
+                    contactController.joinGroupContact(contactController.currentUserId(), newContact);
+                } catch (Exception e1) {
+                    System.err.println("join group error");
+                    e1.printStackTrace();
+                }
+                updateContactsListView();  // Refresh the contact list
             });
         });
 
@@ -127,13 +153,14 @@ public class ContactListView extends Application {
                 System.out.println("Selected members: " + selectedMembers);
 
                 //后端创建，并跳转到新群聊界面
-                String newGroupId = contactController.createNewGroup(contactController.currentUserId(), groupName, selectedMembers);
+                String newGroupId;
                 try {
+                    newGroupId = contactController.createNewGroup(contactController.currentUserId(), groupName, selectedMembers);
                     openChatWindowView(newGroupId);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                } catch (Exception e1) {
+                    System.err.println("new group error");
+                    e1.printStackTrace();
                 }
-
                 updateContacts();  // Refresh the contact list
             });
         });
@@ -162,33 +189,45 @@ public class ContactListView extends Application {
         contactsSection.setSpacing(20);
 
         // Populate contacts list (initially empty)
-        updateContactsList(contactsList);
+        updateContactsList(contactsList, sectionName);
 
         return contactsSection;
     }
 
     // Update the contacts list section dynamically
-    private void updateContactsList(VBox contactsList) {
+    private void updateContactsList(VBox contactsList, String sectionName) {
         contactsList.getChildren().clear();  // Clear the current list
 
         // Fetch updated contacts from the controller
-        List<MembersInContactList> contacts = contactController.getContacts();
-        for (MembersInContactList contact : contacts) {
-            if (contact.isGroupChatRoom()) {
-                contactsList.getChildren().add(createGroupContactItem(contact));
-            } else {
-                contactsList.getChildren().add(createPersonalContactItem(contact));
+        List<MembersInContactList> contacts;
+        try {
+            contacts = contactController.getContacts();
+            if (sectionName.equals("Personal Contacts")) {
+                for (MembersInContactList contact : contacts) {
+                    if (!contact.isGroupChatRoom()) 
+                        contactsList.getChildren().add(createPersonalContactItem(contact));
+                }
             }
+            else {
+                for (MembersInContactList contact : contacts) {
+                    if (contact.isGroupChatRoom()) 
+                        contactsList.getChildren().add(createGroupContactItem(contact));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Update contact error");
+            e.printStackTrace();
         }
+        
     }
 
     // Update method to refresh the contacts container
     private void updateContacts() {
         // Update each section (personal and group contacts)
-        for (int i = 0; i < contactsContainer.getChildren().size(); i++) {
-            VBox section = (VBox) contactsContainer.getChildren().get(i);
-            updateContactsList((VBox) section.getChildren().get(1)); // Update the contacts list inside the section
-        }
+            VBox personalSection = (VBox) contactsContainer.getChildren().get(0);
+            VBox groupSection = (VBox) contactsContainer.getChildren().get(1);
+            updateContactsList((VBox) personalSection.getChildren().get(1), "Personal Contacts");
+            updateContactsList((VBox) groupSection.getChildren().get(1), "Group Contacts"); 
     }
 
     // Create personal contact item
@@ -211,7 +250,12 @@ public class ContactListView extends Application {
 
         deleteButton.setOnAction(e -> {
             System.out.println("Delete button clicked for contact: " + contact.getName());
-            contactController.removeContact(contactController.currentUserId(),contact.getUserId());
+            try {
+                contactController.removeContact(contactController.currentUserId(), contact.getUserId());
+            } catch (Exception e1) {
+                System.err.println("Remove contact error");
+                e1.printStackTrace();
+            }
             updateContacts();  // Refresh the contact list
         });
 
@@ -219,7 +263,10 @@ public class ContactListView extends Application {
         contactItem.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 try {
-                    openChatWindowView(contact.getChatRoomId());
+                    if (contact.getChatRoomId().isEmpty()) 
+                        openChatWindowView(contactController.createNewIndividualChatRoom(contact.getUserId()));
+                    else
+                        openChatWindowView(contact.getChatRoomId());
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
@@ -237,7 +284,7 @@ public class ContactListView extends Application {
         contactItem.setSpacing(10);
         contactItem.setPadding(new Insets(5, 10, 5, 10));
 
-        Text groupName = new Text(contact.getUserId() + ": " + contact.getName());
+        Text groupName = new Text(contact.getChatRoomId() + ": " + contact.getName());
         groupName.setStyle("-fx-font-size: 16px;");
 
         Button exitButton = new Button("Exit");
@@ -250,7 +297,12 @@ public class ContactListView extends Application {
 
         exitButton.setOnAction(e -> {
             System.out.println("Exit button clicked for group: " + contact.getName());
-            contactController.removeGroupContact(contactController.currentUserId(), contact.getChatRoomId());
+            try {
+                contactController.removeGroupContact(contactController.currentUserId(), contact.getChatRoomId());
+            } catch (Exception e1) {
+                System.err.println("Exit group error");
+                e1.printStackTrace();
+            }
             updateContacts();  // Refresh the contact list
         });
 

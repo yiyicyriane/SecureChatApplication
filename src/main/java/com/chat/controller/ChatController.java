@@ -12,6 +12,7 @@
 
 package com.chat.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,8 +45,9 @@ public class ChatController {
     public String getChatRoomName(ChatRoom chatRoom, String userId) throws Exception {
         String chatRoomName = chatRoom.getChatRoomName();
         if (!chatRoom.isGroupChatRoom()) {
-            chatRoom.getMemberIdList().remove(userId);
-            String friendId = chatRoom.getMemberIdList().getFirst();
+            List<String> memberIdList = chatRoom.getMemberIdList();
+            memberIdList.remove(userId);
+            String friendId = memberIdList.getFirst();
             chatRoomName = authService.getContact(friendId).getUsername();
         }
         return chatRoomName;
@@ -71,10 +73,13 @@ public class ChatController {
         for (String chatRoomId : chatRoomIdSet) {
             ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
             Message lastMessage = getLastMessage(chatRoomId);
+            String timestamp = "";
+            if (!lastMessage.equals(new Message()))
+                timestamp = TimestampFormatter.timestampToString(lastMessage.getTimestamp());
             ChatItem chatItem = new ChatItem(chatRoom.getChatRoomId(),
                     this.getChatRoomName(chatRoom, userId),
                     lastMessage.getContent(),
-                    TimestampFormatter.timestampToString(lastMessage.getTimestamp()));
+                    timestamp);
             chatItemList.addChatItem(chatItem);
         }
         return chatItemList;

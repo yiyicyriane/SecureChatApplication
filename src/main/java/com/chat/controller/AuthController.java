@@ -1,5 +1,7 @@
 package com.chat.controller;
 
+import java.util.Set;
+
 import com.chat.model.User;
 import com.chat.model.UserServer;
 import com.chat.service.AuthService;
@@ -11,6 +13,8 @@ import lombok.Data;
 //yiyi add
 import com.chat.view.chat.ChatListView;
 import com.chat.util.CurrentUserContext;
+import com.chat.util.FriendApplicationNotice;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert;
@@ -39,6 +43,7 @@ public class AuthController {
 
             // Store the logged-in user in CurrentUserContext
             CurrentUserContext.getInstance().setCurrentUser(loggedInUser);
+            CurrentUserContext.getInstance().setCurrentUserServer(registeredUsersServer);
 
             // Close the current login window and open the chat list window
             Stage currentStage = (Stage) signInButton.getScene().getWindow();
@@ -50,6 +55,12 @@ public class AuthController {
             Stage chatListStage = new Stage();
             try {
                 chatListView.start(chatListStage);
+                Set<String> friendApplicationSenderIdSet = authService.getFriendApplicationSenderIdSet(userId);
+                for (String friendId: friendApplicationSenderIdSet) {
+                    if (FriendApplicationNotice.notice(friendId)) {
+                        authService.postNewFriendApplicationSenderIdSet(userId, friendId);        
+                    }
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

@@ -29,8 +29,7 @@ public class ChatRoomService {
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return response.body();
-        // "Chat room created."
-        // TODO: update chatroom id set
+        // Chat room id
     }
 
     public ChatRoom getChatRoom(String chatRoomId) throws Exception {

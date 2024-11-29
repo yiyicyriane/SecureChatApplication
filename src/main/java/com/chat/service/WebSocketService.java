@@ -19,18 +19,17 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import com.chat.util.CurrentChatWindowViewContext;
 import com.chat.util.CurrentUserContext;
 import com.chat.util.CurrentViewContext;
+import com.chat.util.FileLoadUtil;
+import com.chat.util.FriendApplicationNotice;
 import com.chat.view.auth.LoginView;
 import com.chat.view.chat.ChatListView;
 import com.chat.view.chat.ChatWindowView;
 import com.chat.view.contacts.ContactListView;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-
 public class WebSocketService {
     private static WebSocketService instance;
 
-    private final String serverUrl = "ws://54.153.42.91:8080/chat";
+    private final String serverUrl = "ws"+ FileLoadUtil.getServerUrl().substring(4) +"/chat";
     private final WebSocketStompClient stompClient;
     private final String friendTopic;
     private final String chatRoomTopic;
@@ -68,16 +67,6 @@ public class WebSocketService {
             System.out.println("subscribe: " + messageTopic);
             // update chatroom messages
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
-            // if (currentView instanceof ChatListView) {
-            //     try {
-            //         ChatListView chatListView = (ChatListView) currentView;
-            //         chatListView.updateChatListView();
-            //     } catch (Exception e) {
-            //         System.err.println("Refresh chat list view error");
-            //         e.printStackTrace();
-            //     }
-            // }
-            // else 
             if (currentView != null && currentView instanceof ChatWindowView) {
                 try {
                     ChatWindowView chatWindowView = CurrentChatWindowViewContext.getInstance().getChatWindowView();
@@ -101,26 +90,30 @@ public class WebSocketService {
         public void handleFrame(@NonNull StompHeaders stompHeaders, @Nullable Object payload) {
             // receivedFriendApplicationFuture.complete((String) payload);
             System.out.println("subscribe: " + friendTopic);
-            // TODO: show friend application notice, update contactview
             String friendId = (String) payload;
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
-            if (!(currentView == null || currentView instanceof LoginView)) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("New Friend Application");
-                alert.setHeaderText(null);
-                alert.setContentText("Do you accept the friend application from the user ID: " + friendId);
-                Optional<ButtonType> result = alert.showAndWait();
-                try {
-                    if (result.isPresent() && result.get() == ButtonType.OK) {
-                        authService.postNewFriendApplicationSenderIdSet(CurrentUserContext.getInstance().getCurrentUser().getUserId(), friendId);
-                        if (currentView instanceof ContactListView) {
-                            ContactListView contactListView = (ContactListView) currentView;   
-                            // TODO: contactListView.update();                     
-                        }            
+            if (friendId != null) {
+                if (friendId.equals("Friend list update")) {
+                    // friend list update notice
+                    if (currentView != null && currentView instanceof ContactListView) {
+                        ContactListView contactListView = (ContactListView) currentView;
+                        contactListView.updateContactsListView();
                     }
-                } catch (Exception e) {
-                    System.err.println("Refresh contact list view error");
-                    e.printStackTrace();
+                }
+                else if (!(currentView == null || currentView instanceof LoginView)) {
+                    // show friend application notice, update contactview
+                    try {
+                        if (FriendApplicationNotice.notice(friendId)) {
+                            authService.postNewFriendApplicationSenderIdSet(CurrentUserContext.getInstance().getCurrentUser().getUserId(), friendId);
+                            if (currentView instanceof ContactListView) {
+                                ContactListView contactListView = (ContactListView) currentView;   
+                                contactListView.updateContactsListView();                   
+                            }            
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Refresh contact list view error");
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -137,7 +130,6 @@ public class WebSocketService {
         public void handleFrame(@NonNull StompHeaders stompHeaders, @Nullable Object payload) {
             // receivedFriendApplicationFuture.complete((String) payload);
             System.out.println("subscribe: " + chatRoomTopic);
-            // TODO: update chatlistview
             Object currentView = CurrentViewContext.getInstance().getCurrentView();
             if (currentView != null && currentView instanceof ChatListView) {
                 try {
@@ -151,7 +143,7 @@ public class WebSocketService {
             else if (currentView instanceof ContactListView) {
                 try {
                     ContactListView contactListView = (ContactListView) currentView;
-                    // TODO: contactListView.update();
+                    contactListView.updateContactsListView();
                 } catch (Exception e) {
                     System.err.println("Refresh contact list view error");
                     e.printStackTrace();

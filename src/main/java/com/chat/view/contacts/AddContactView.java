@@ -21,7 +21,7 @@ public class AddContactView {
 
 
     // show() 方法，用来展示界面
-    public void show(Stage primaryStage, Consumer<String> onContactAdded) {
+    public void show(Stage primaryStage, boolean isGroup, Consumer<String> onContactAdded) {
         this.onContactAdded = onContactAdded;
 
 
@@ -32,7 +32,8 @@ public class AddContactView {
 
 
         // 添加说明标签
-        Label instructionLabel = new Label("Please enter the user's/group's ID:");
+        String labelString = isGroup ? "group's" : "user's";
+        Label instructionLabel = new Label("Please enter the " + labelString + " ID:");
         instructionLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
 
 
@@ -43,7 +44,8 @@ public class AddContactView {
 
 
         // 创建添加按钮
-        Button addButton = new Button("Add/Join");
+        String buttonString = isGroup ? "Join" : "Add";
+        Button addButton = new Button(buttonString);
         addButton.setOnAction(e -> {
             String newContact = contactIdField.getText().trim();
             if (!newContact.isEmpty() && onContactAdded != null) {
@@ -58,9 +60,10 @@ public class AddContactView {
 
 
         // 创建并显示场景
+        String titleString = isGroup ? "Join Group" : "Add Contact";
         Scene scene = new Scene(root, 300, 200);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Add Contact/Join Group");
+        primaryStage.setTitle(titleString);
         primaryStage.show();
     }
 }
