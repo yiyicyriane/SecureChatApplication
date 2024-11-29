@@ -98,6 +98,7 @@ public class ChatWindowView extends Application {
 
         // Chat history
         ScrollPane chatScrollPane = new ScrollPane();
+        chatScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // 始终显示垂直滚动条
         VBox chatBox = new VBox(10);
         chatBox.setStyle("-fx-padding: 10;");
 

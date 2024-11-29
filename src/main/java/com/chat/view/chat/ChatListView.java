@@ -15,9 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 
 public class ChatListView extends Application {
@@ -35,8 +34,30 @@ public class ChatListView extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // 创建主布局
-        VBox root = new VBox(10);
+        //VBox root = new VBox(10);
+        AnchorPane root = new AnchorPane();
         root.setStyle("-fx-padding: 20; -fx-background-color: #f0f0f0;");
+
+
+        //创建 ScrollPane 包裹 chatList
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(chatList);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setStyle("-fx-background: #f0f0f0;");
+
+        // 设置 ScrollPane 的锚点，使其占满上面区域直到底部导航栏
+        AnchorPane.setTopAnchor(scrollPane, 0.0);
+        AnchorPane.setLeftAnchor(scrollPane, 0.0);
+        AnchorPane.setRightAnchor(scrollPane, 0.0);
+        AnchorPane.setBottomAnchor(scrollPane, 50.0); // 底部留出空间给导航栏
+
+        //设置ScrollPane伸展规则，填充整个可用空间
+       // VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        //将ScrollPane添加到主布局
+        root.getChildren().add(scrollPane);
+
 
         // 获取聊天项列表并创建聊天框
         updateChatList();
@@ -45,9 +66,9 @@ public class ChatListView extends Application {
         root.getChildren().add(chatList);
 
         // 添加底部导航栏
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-        root.getChildren().add(spacer);
+       //Region spacer = new Region();
+        //VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+        //root.getChildren().add(spacer);
 
         HBox bottomBar = createBottomBar(stage);
         root.getChildren().add(bottomBar);
@@ -123,9 +144,15 @@ public class ChatListView extends Application {
         return chatItemBox;
     }
 
-    // 创建底部导航栏的方法
+    // 创建底部导航栏
     private HBox createBottomBar(Stage stage) {
         HBox bottomBar = new HBox(30);
+
+        bottomBar.setMinHeight(40); // 设置底部栏高度
+        AnchorPane.setBottomAnchor(bottomBar, 0.0);
+        AnchorPane.setLeftAnchor(bottomBar, 0.0);
+        AnchorPane.setRightAnchor(bottomBar, 0.0);
+
         bottomBar.setAlignment(Pos.CENTER);
         bottomBar.setStyle("-fx-background-color: #55AD9B; -fx-padding: 10;");
 
