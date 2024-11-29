@@ -16,18 +16,6 @@ public class Main extends Application {
         Stage loginStage = new Stage();
         LoginView loginView = new LoginView(loginStage, authController); // 传递 AuthController
         loginView.show();
-
-        // 登录按钮点击后，模拟登录操作
-        // 这里仅做示范，实际操作会在 LoginView 中完成
-        // String loginUserId = "user1"; // 假设用户名
-        // String loginPassword = "password"; // 假设密码
-        // boolean loginSuccess = authController.login(loginUserId, loginPassword);
-
-        // if (loginSuccess) {
-        //     System.out.println("Login successful!");
-        // } else {
-        //     System.out.println("Login failed: Invalid credentials.");
-        // }
     }
 
     public static void main(String[] args) {
