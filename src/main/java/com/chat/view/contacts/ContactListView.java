@@ -263,10 +263,12 @@ public class ContactListView extends Application {
         contactItem.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 try {
-                    if (contact.getChatRoomId().isEmpty()) 
+                    String chatRoomId = contactController.existsChatRoomWith(contact.getUserId());
+                    contact.setChatRoomId(chatRoomId);
+                    if (chatRoomId.isEmpty()) 
                         openChatWindowView(contactController.createNewIndividualChatRoom(contact.getUserId()));
                     else
-                        openChatWindowView(contact.getChatRoomId());
+                        openChatWindowView(chatRoomId);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }

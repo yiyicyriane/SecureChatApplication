@@ -120,4 +120,16 @@ public class ContactController {
         ChatRoom chatRoom = new ChatRoom(true, memberList, groupName);
         return chatRoomService.postChatRoom(chatRoom);
     }
+
+    public String existsChatRoomWith(String friendId) throws Exception {
+        Set<String> chatRoomIdSet = authService.getChatRoomIdSet(currentUserId());
+        for (String chatRoomId: chatRoomIdSet) {
+            ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
+            if (!chatRoom.isGroupChatRoom()) {
+                if (chatRoom.getMemberIdList().contains(friendId))
+                    return chatRoomId;
+            }
+        }
+        return "";
+    }
 }
