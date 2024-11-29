@@ -13,7 +13,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -136,7 +139,7 @@ public class ContactListView extends Application {
                     System.err.println("join group error");
                     e1.printStackTrace();
                 }
-                updateContactsListView();  // Refresh the contact list
+                updateContacts();  // Refresh the contact list
             });
         });
 
@@ -252,7 +255,7 @@ public class ContactListView extends Application {
         contactItem.setSpacing(10);
         contactItem.setPadding(new Insets(5, 10, 5, 10));
 
-        Text contactName = new Text(contact.getUserId() + ": " + contact.getName());
+        Text contactName = new Text(contact.getName() + " - " + contact.getUserId());
         contactName.setStyle("-fx-font-size: 16px;");
 
         Button deleteButton = new Button("Delete");
@@ -294,6 +297,36 @@ public class ContactListView extends Application {
         return contactItem;
     }
 
+    private Label makeSelectable(Label label) {
+        StackPane textStack = new StackPane();
+        TextField textField = new TextField(label.getText());
+        textField.setEditable(false);
+        textField.setStyle(
+            "-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-radius: 0; -fx-padding: 0;"
+        );
+    
+        // Make sure the TextField can grow horizontally
+        textField.setMaxWidth(Double.MAX_VALUE);  // Allow the TextField to expand horizontally
+        textField.setPrefWidth(Region.USE_COMPUTED_SIZE);  // Compute size based on content
+    
+        // The invisible label is a hack to get the TextField to size like a label
+        Label invisibleLabel = new Label();  
+        invisibleLabel.textProperty().bind(label.textProperty());
+        invisibleLabel.setVisible(false);
+    
+        textStack.getChildren().addAll(invisibleLabel, textField);
+    
+        // Bind the label's text to the TextField
+        label.textProperty().bindBidirectional(textField.textProperty());
+    
+        // Set the label's graphic to the text stack
+        label.setGraphic(textStack);
+        label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+    
+        return label;
+    }
+    
+
     // Create group contact item
     private HBox createGroupContactItem(MembersInContactList contact) {
         HBox contactItem = new HBox();
@@ -301,8 +334,11 @@ public class ContactListView extends Application {
         contactItem.setSpacing(10);
         contactItem.setPadding(new Insets(5, 10, 5, 10));
 
-        Text groupName = new Text(contact.getChatRoomId() + ": " + contact.getName());
+        // Text groupName = new Text(contact.getChatRoomId() + ": " + contact.getName());
+        // groupName.setStyle("-fx-font-size: 16px;");
+        Label groupName = new Label(contact.getName() + " - " + contact.getChatRoomId());
         groupName.setStyle("-fx-font-size: 16px;");
+        makeSelectable(groupName);
 
         Button exitButton = new Button("Exit");
         exitButton.setStyle("-fx-background-color: #95D2B3; -fx-text-fill: white;");

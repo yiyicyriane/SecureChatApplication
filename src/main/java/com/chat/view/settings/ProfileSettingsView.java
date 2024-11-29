@@ -142,7 +142,9 @@ public class ProfileSettingsView extends Application {
         // Update the profile picture path in currentUser (this is the model)
         currentUser.setProfilePicture(newProfilePicturePath);
         // Update the profileImageView to show the new profile picture
-        profileImageView.setImage(new Image(newProfilePicturePath)); // Refresh the profile image view
+        Image profileImage = new Image(newProfilePicturePath);
+        profileImage = ImageCropUtil.cropToSquare(profileImage);
+        profileImageView.setImage(profileImage); // Refresh the profile image view
     }
 
 /*

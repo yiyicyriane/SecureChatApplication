@@ -24,21 +24,6 @@ public class ProfilePictureHandler {
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
             image = ImageCropUtil.cropToSquare(image);
 
-            // 创建 ImageView 来显示图像
-            // ImageView imageView = new ImageView(image);
-            // imageView.setFitWidth(100); // 设置图片宽度为 100 像素
-            // imageView.setFitHeight(100); // 设置图片高度为 100 像素
-            // imageView.setPreserveRatio(true); // 保持宽高比，防止失真
-
-            // // 创建圆形剪辑区域，直径为 100
-            // Circle clip = new Circle(50, 50, 50); // 圆心 (50, 50)，半径 50
-            // imageView.setClip(clip); // 将剪辑区域设置到 ImageView
-
-            // // 截取剪辑后的图片
-            // WritableImage clippedImage = imageView.snapshot(null, null);
-
-            // // 清除剪辑，返回裁剪后的图像
-            // imageView.setClip(null);
             return image; // 返回处理后的圆形头像图像
         } catch (Exception e) {
             System.err.println("Load image error");

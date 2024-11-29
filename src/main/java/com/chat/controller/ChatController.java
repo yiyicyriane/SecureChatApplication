@@ -12,6 +12,7 @@
 
 package com.chat.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -122,6 +123,14 @@ public class ChatController {
         messageService.deleteMessage(chatRoomId, timestamp);
     }
 
+    public List<String> getMemberNameList(List<String> memberIdList) throws Exception {
+        List<String> memberNameList = new ArrayList<>();
+        for (String memberId: memberIdList) {
+            UserServer userServer = authService.getContact(memberId);
+            memberNameList.add(userServer.getUsername());
+        }
+        return memberNameList;
+    }
 }
 
 

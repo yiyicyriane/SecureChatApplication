@@ -99,7 +99,14 @@ public class ChatWindowView extends Application {
         // Button to show group members
         Button membersButton = new Button("Members");
         membersButton.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #55AD9B;");
-        membersButton.setOnAction(event -> showGroupMembers());
+        membersButton.setOnAction(event -> {
+            try {
+                showGroupMembers();
+            } catch (Exception e) {
+                System.err.println("Show froup member error");
+                e.printStackTrace();
+            }
+        });
 
         header.getChildren().addAll(chatRoomImageView, chatRoomNameText, membersButton);
 
@@ -201,14 +208,19 @@ public class ChatWindowView extends Application {
         return mainLayout;
     }
 
-    private void showGroupMembers() {
+    private void showGroupMembers() throws Exception {
         Stage membersStage = new Stage();
         VBox membersBox = new VBox(10);
         membersBox.setStyle("-fx-padding: 10; -fx-background-color: #ffffff;");
         membersBox.setAlignment(Pos.CENTER_LEFT);
 
-        for (String memberId : chatWindow.getMemberIdList()) {
-            Text memberText = new Text(memberId);
+        List<String> memberIdList = chatWindow.getMemberIdList();
+        List<String> memberNameList = chatController.getMemberNameList(memberIdList);
+        Text titleText = new Text( "Username - ID");
+        titleText.setFont(Font.font("Arial", 14));
+        membersBox.getChildren().add(titleText);
+        for (int i = 0; i < memberIdList.size(); i++) {
+            Text memberText = new Text( memberNameList.get(i) + " - "+ memberIdList.get(i));
             memberText.setFont(Font.font("Arial", 14));
             membersBox.getChildren().add(memberText);
         }
