@@ -46,7 +46,7 @@ public class ChatController {
         if (!chatRoom.isGroupChatRoom()) {
             List<String> memberIdList = chatRoom.getMemberIdList();
             memberIdList.remove(userId);
-            String friendId = memberIdList.getFirst();
+            String friendId = memberIdList.get(0);
             chatRoomName = authService.getContact(friendId).getUsername();
         }
         return chatRoomName;
@@ -55,7 +55,7 @@ public class ChatController {
     public Message getLastMessage(String chatRoomId) throws Exception {
         List<Message> messages = messageService.getMessages(chatRoomId);
         if (messages.isEmpty()) return new Message();
-        return messages.getLast();
+        return messages.get(messages.size() - 1);
     }
 
     /**
@@ -94,7 +94,7 @@ public class ChatController {
         if (!chatRoom.isGroupChatRoom()) {
             List<String> memberIdList = chatRoom.getMemberIdList();
             memberIdList.remove(userId);
-            String friendId = memberIdList.getFirst();
+            String friendId = memberIdList.get(0);
             UserServer friend = authService.getContact(friendId);
             profile = friend.getProfile();
         }
