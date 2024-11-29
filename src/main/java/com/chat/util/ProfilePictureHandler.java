@@ -1,10 +1,7 @@
 package com.chat.util;
 
 import javafx.scene.image.Image; // 用于处理图片
-import javafx.scene.image.ImageView; // 显示图片
-import javafx.scene.shape.Circle; // 处理圆形裁剪
 import javafx.embed.swing.SwingFXUtils; // 将Java Swing图片转为JavaFX图片
-import javafx.scene.image.WritableImage; // 用于存储裁剪后的图片
 
 import javax.imageio.ImageIO; // 读取图片文件
 import java.awt.image.BufferedImage; // 用于操作图片内容
