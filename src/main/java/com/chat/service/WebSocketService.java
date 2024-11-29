@@ -150,7 +150,7 @@ public class WebSocketService {
                         e.printStackTrace();
                     }
                 }
-                else if (currentView instanceof ContactListView) {
+                else if (currentView != null && currentView instanceof ContactListView) {
                     try {
                         ContactListView contactListView = (ContactListView) currentView;
                         contactListView.updateContactsListView();

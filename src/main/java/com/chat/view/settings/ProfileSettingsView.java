@@ -1,6 +1,7 @@
 package com.chat.view.settings;
 
 import com.chat.util.ControllerManager;
+import com.chat.util.CurrentViewContext;
 import com.chat.util.ImageCropUtil;
 import com.chat.view.chat.ChatListView;
 import com.chat.view.contacts.ContactListView;
@@ -59,6 +60,8 @@ public class ProfileSettingsView extends Application {
         stage.setScene(scene);
         stage.setTitle("Profile Settings");
         stage.show();
+
+        CurrentViewContext.getInstance().setCurrentView(this);
     }
 
     // Create the top area with profile picture and username

@@ -18,7 +18,7 @@ public class CurrentViewContext {
     }
 
     public void setCurrentView(Object currentView) {
-        if (this.currentView != null) lastView = currentView;
+        if (this.currentView != null) lastView = this.currentView;
         this.currentView = currentView;
     }
 
