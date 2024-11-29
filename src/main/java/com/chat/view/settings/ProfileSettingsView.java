@@ -63,7 +63,7 @@ public class ProfileSettingsView extends Application {
     // Create the top area with profile picture and username
     private VBox createTopArea() {
         VBox topArea = new VBox();
-        topArea.setStyle("-fx-background-color: #55AD9B; -fx-padding: 20 10 30 10;");
+        topArea.setStyle("-fx-background-color: #55AD9B; -fx-padding: 10 10 30 10;");
         topArea.setAlignment(Pos.CENTER_LEFT);
 
         HBox content = new HBox(10);
@@ -74,13 +74,14 @@ public class ProfileSettingsView extends Application {
         if (!currentUser.getProfilePicture().isEmpty()) {
             Image profileImage = new Image(currentUser.getProfilePicture()); // Fetch profile picture from currentUser
             profileImageView.setImage(profileImage);
-            profileImageView.setFitWidth(80);
-            profileImageView.setFitHeight(80);
-            profileImageView.setPreserveRatio(true);
-            Circle clip = new Circle(40, 40, 40); // Circular clip
-            profileImageView.setClip(clip);
+            
         }
-
+        profileImageView.setFitWidth(80);
+        profileImageView.setFitHeight(80);
+        profileImageView.setPreserveRatio(true);
+        Circle clip = new Circle(40, 40, 40); // Circular clip
+        profileImageView.setClip(clip);
+        
         // Display user's name
         Label userNameLabel = new Label(currentUser.getName()); // Fetch name from currentUser
         userNameLabel.setStyle("-fx-text-fill: black; -fx-font-size: 18px; -fx-font-weight: bold;");

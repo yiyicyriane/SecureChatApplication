@@ -159,7 +159,6 @@ import javafx.scene.image.Image; // For setting ImageView image
 import javafx.scene.image.ImageView; // For displaying profile picture
 
 import java.io.File; // For handling file selection
-import java.util.UUID; // For generating a unique ID
 
 public class RegisterView {
     private Stage stage;
