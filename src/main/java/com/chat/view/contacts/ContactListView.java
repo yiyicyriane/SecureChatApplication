@@ -177,7 +177,7 @@ public class ContactListView extends Application {
         sectionTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         VBox contactsList = new VBox(10);
-        contactsSection.getChildren().addAll(sectionTitle, contactsList);
+        //contactsSection.getChildren().addAll(sectionTitle, contactsList);
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(contactsList);
@@ -187,6 +187,8 @@ public class ContactListView extends Application {
 
         contactsSection.setAlignment(Pos.CENTER);
         contactsSection.setSpacing(20);
+        contactsSection.getChildren().addAll(sectionTitle, scrollPane);
+
 
         // Populate contacts list (initially empty)
         updateContactsList(contactsList, sectionName);
@@ -335,12 +337,11 @@ public class ContactListView extends Application {
         HBox bottomBar = new HBox();
         bottomBar.setAlignment(Pos.CENTER);
         bottomBar.setSpacing(30);
+        bottomBar.setStyle("-fx-background-color: #55AD9B; -fx-padding: 10;");
 
         Button chatsButton = new Button("Chats");
         Button contactsButton = new Button("Contacts");
         Button settingsButton = new Button("Settings");
-
-        bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);
 
         // Navigate to chats view
         chatsButton.setOnAction(e -> {
@@ -376,7 +377,7 @@ public class ContactListView extends Application {
             settingsView.start(stage);
         });
 
-
+        bottomBar.getChildren().addAll(chatsButton, contactsButton, settingsButton);
         return bottomBar;
     }
 }
