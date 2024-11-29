@@ -4,14 +4,12 @@ import com.chat.util.ControllerManager;
 import com.chat.view.chat.ChatListView;
 import com.chat.view.contacts.ContactListView;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -45,7 +43,7 @@ public class ProfileSettingsView extends Application {
         // Create Profile Setting area and Notification Setting area
        // VBox centerArea = new VBox(2, createProfileSettingArea(stage), createNotificationSettingArea());
         VBox centerArea = new VBox(1, createProfileSettingArea(stage));
-        centerArea.setVgrow(centerArea, Priority.ALWAYS);
+        VBox.setVgrow(centerArea, Priority.ALWAYS);
         centerArea.setStyle("-fx-background-color: #FFFFFF; -fx-padding: 20 0;");
 
         // Create bottom navigation bar
@@ -73,13 +71,15 @@ public class ProfileSettingsView extends Application {
 
         // Display user's profile picture
         profileImageView = new ImageView();
-        Image profileImage = new Image(currentUser.getProfilePicture()); // Fetch profile picture from currentUser
-        profileImageView.setImage(profileImage);
-        profileImageView.setFitWidth(80);
-        profileImageView.setFitHeight(80);
-        profileImageView.setPreserveRatio(true);
-        Circle clip = new Circle(40, 40, 40); // Circular clip
-        profileImageView.setClip(clip);
+        if (!currentUser.getProfilePicture().isEmpty()) {
+            Image profileImage = new Image(currentUser.getProfilePicture()); // Fetch profile picture from currentUser
+            profileImageView.setImage(profileImage);
+            profileImageView.setFitWidth(80);
+            profileImageView.setFitHeight(80);
+            profileImageView.setPreserveRatio(true);
+            Circle clip = new Circle(40, 40, 40); // Circular clip
+            profileImageView.setClip(clip);
+        }
 
         // Display user's name
         Label userNameLabel = new Label(currentUser.getName()); // Fetch name from currentUser
@@ -109,16 +109,17 @@ public class ProfileSettingsView extends Application {
             File file = fileChooser.showOpenDialog(stage);
 
             if (file != null) {
-                Image newProfileImage = new Image(file.toURI().toString());
-                if (newProfileImage != null) {
+                // Image newProfileImage = new Image(file.toURI().toString());
+                try {
                     if(settingsController.updateProfilePicture(file.toURI().toString())){//// Call controller to update profile picture
                         updateProfilePicture(file.toURI().toString());
                         showAlert("Success", "Profile picture updated successfully!");
                     }else{
                         showAlert("Error", "Failed to update profile picture.");
                     }
-                } else {
-                    showAlert("Error", "Can't find profile image.");
+                } catch (Exception e1) {
+                    System.err.println("update profile error");
+                    e1.printStackTrace();
                 }
             }
         });

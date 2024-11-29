@@ -40,7 +40,7 @@ public class ControllerManager {
     }
 
     // 获取 SettingsController 的实例
-    public SettingsController getSettingsController() {
+    public SettingsController getSettingsController() throws Exception {
         if (settingsController == null) {
             settingsController = new SettingsController();
         }

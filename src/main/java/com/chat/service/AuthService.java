@@ -114,6 +114,18 @@ public class AuthService {
         // "Password changed." "Password change failed."
     }
 
+    public String putUser(UserServer userServer) throws Exception {
+        String endpoint = serverUrl + "/user/" + userServer.getUserId();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .PUT(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(userServer)))
+                .header("Content-Type", "application/json")
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.body(); 
+        // "User updated."
+    }
+
     public String getPublicKey(String userId) throws Exception {
         String endpoint = serverUrl + "/publickey/" + userId;
         HttpRequest request = HttpRequest.newBuilder()

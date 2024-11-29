@@ -17,12 +17,12 @@ import java.util.function.Consumer;
 public class AddContactView {
 
 
-    private Consumer<String> onContactAdded;
+    // private Consumer<String> onContactAdded;
 
 
     // show() 方法，用来展示界面
     public void show(Stage primaryStage, boolean isGroup, Consumer<String> onContactAdded) {
-        this.onContactAdded = onContactAdded;
+        // this.onContactAdded = onContactAdded;
 
 
         // 创建根布局

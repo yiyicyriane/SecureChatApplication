@@ -1,7 +1,6 @@
 package com.chat.service;
 
 import java.lang.reflect.Type;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.lang.NonNull;

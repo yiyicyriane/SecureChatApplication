@@ -150,7 +150,7 @@ import java.util.stream.Collectors;
 public class NewGroupView {
     private ContactController contactController;
     private BiConsumer<String, List<String>> onGroupCreated; // Callback for group creation
-    private Stage stage;
+    // private Stage stage;
 
     public NewGroupView() throws Exception {
         this.contactController = ControllerManager.getInstance().getContactController();
@@ -159,7 +159,7 @@ public class NewGroupView {
 
     // show() method to display the New Group interface
     public void show(Stage primaryStage, BiConsumer<String, List<String>> onGroupCreated) {
-        stage = primaryStage;
+        // stage = primaryStage;
         this.onGroupCreated = onGroupCreated;
 
         // Step 1: Create Group Name Input
@@ -200,7 +200,7 @@ public class NewGroupView {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Create New Group");
         primaryStage.show();
-        stage = primaryStage;
+        // stage = primaryStage;
     }
 
     private void showContactListScene(Stage primaryStage, String groupName) throws Exception {

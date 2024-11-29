@@ -1,7 +1,6 @@
 package com.chat.controller;
 
 import com.chat.model.MembersInContactList;
-import com.chat.model.UserServer;
 import com.chat.model.ChatRoom;
 import com.chat.service.AuthService;
 import com.chat.service.ChatRoomService;
