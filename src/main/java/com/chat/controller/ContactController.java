@@ -34,7 +34,7 @@ public class ContactController {
         if (!chatRoom.isGroupChatRoom()) {
             List<String> memberIdList = chatRoom.getMemberIdList();
             memberIdList.remove(currentUserId());
-            String friendId = memberIdList.getFirst();
+            String friendId = memberIdList.get(0);
             return friendId;
         }
         return "";
