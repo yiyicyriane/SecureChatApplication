@@ -80,12 +80,17 @@ public class ChatWindowView extends Application {
             chatRoomImageView = new ImageView();
         }
         else {
-            Image chatRoomImage = new Image(chatWindow.getProfilePicture());
-            chatRoomImage = ImageCropUtil.cropToSquare(chatRoomImage);
-            chatRoomImageView = new ImageView(chatRoomImage);
-            chatRoomImageView.setFitWidth(40);
-            chatRoomImageView.setFitHeight(40);
+            try {
+                Image chatRoomImage = new Image(chatWindow.getProfilePicture());
+                chatRoomImage = ImageCropUtil.cropToSquare(chatRoomImage);
+                chatRoomImageView = new ImageView(chatRoomImage);
+            } catch (Exception e) {
+                chatRoomImageView = new ImageView();
+                System.out.println("Profile image does not exist.");
+            }
         }
+        chatRoomImageView.setFitWidth(40);
+        chatRoomImageView.setFitHeight(40);
 
         Text chatRoomNameText = new Text(chatWindow.getChatRoomName());
         chatRoomNameText.setFont(Font.font("Arial", 18));

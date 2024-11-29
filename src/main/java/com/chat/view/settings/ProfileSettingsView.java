@@ -76,9 +76,13 @@ public class ProfileSettingsView extends Application {
         // Display user's profile picture
         profileImageView = new ImageView();
         if (!currentUser.getProfilePicture().isEmpty()) {
-            Image profileImage = new Image(currentUser.getProfilePicture()); // Fetch profile picture from currentUser
-            profileImage = ImageCropUtil.cropToSquare(profileImage);
-            profileImageView.setImage(profileImage);
+            try {
+                Image profileImage = new Image(currentUser.getProfilePicture()); // Fetch profile picture from currentUser
+                profileImage = ImageCropUtil.cropToSquare(profileImage);
+                profileImageView.setImage(profileImage);
+            } catch (Exception e) {
+                System.out.println("Profile image does not exist.");
+            }
             
         }
         profileImageView.setFitWidth(80);
@@ -113,7 +117,6 @@ public class ProfileSettingsView extends Application {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
             File file = fileChooser.showOpenDialog(stage);
-
             if (file != null) {
                 // Image newProfileImage = new Image(file.toURI().toString());
                 try {
