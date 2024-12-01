@@ -3,6 +3,7 @@ package com.chat.view.contacts;
 import com.chat.controller.ContactController;
 import com.chat.model.MembersInContactList;
 import com.chat.util.ControllerManager;
+import com.chat.util.CurrentChatWindowViewContext;
 import com.chat.util.CurrentViewContext;
 import com.chat.view.chat.ChatListView;
 import com.chat.view.chat.ChatWindowView;
@@ -377,8 +378,9 @@ public class ContactListView extends Application {
     private void openChatWindowView(String chatRoomId) throws Exception {
         System.out.println("Opening chat window for: " + chatRoomId);
         ChatWindowView chatWindowView = new ChatWindowView(chatRoomId);
-        Stage chatWindowStage = new Stage();
-        chatWindowView.start(chatWindowStage);
+        CurrentChatWindowViewContext.getInstance().setChatWindowView(chatWindowView);
+        // Stage chatWindowStage = new Stage();
+        // chatWindowView.start(chatWindowStage);
     }
 
     // Create bottom bar navigation
